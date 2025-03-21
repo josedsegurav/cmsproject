@@ -2,6 +2,10 @@
 
 // Require database data
 require('connect.php');
+require '\xampp\htdocs\webdev2\project\utils\lib\ImageResize.php';
+require '\xampp\htdocs\webdev2\project\utils\lib\ImageResizeException.php';
+
+use \Gumlet\ImageResize;
 
 function file_upload_path($original_filename, $upload_subfolder_name = 'images') {
     $current_folder = dirname(__FILE__);
@@ -33,10 +37,10 @@ if ($file_upload_detected) {
     $temporary_file_path  = $original_file['tmp_name'];
     $new_file_path        = file_upload_path($file_filename);
 
-}
 
+echo($file_filename);
 // Function to verify there is data coming from the forms, and not blank or just whitespaces on the inputs.
-function filterInput() {
+function filterInput($temporary_file_path, $new_file_path) {
     if (
         $_POST && 
         !empty($_POST['name']) && 
@@ -47,8 +51,8 @@ function filterInput() {
         !empty($_POST['link']) &&
         !(trim($_POST['name']) == '') &&
         !(trim($_POST['link']) == '') && 
-        !(trim($_POST['content']) == ''
-    )){
+        !(trim($_POST['content']) == '')
+        ){
         return true;
     }else{
         return false;
@@ -56,8 +60,7 @@ function filterInput() {
 }
 
 
-
-if(filterInput()){
+if(filterInput($temporary_file_path, $new_file_path)){
     // If statement that checks if the data is coming from the create button from the create.php file.
     if(isset($_POST['create'])){
         // Sanitize special characters from the data. 
@@ -70,9 +73,16 @@ if(filterInput()){
 
         move_uploaded_file($temporary_file_path, $new_file_path);
 
+        $path_info = pathinfo($new_file_path);
+
+        $medium_image = new ImageResize($new_file_path);
+        $medium_image->resizeToWidth(300);
+        $medium_image->save($path_info['dirname'] . DIRECTORY_SEPARATOR . "medium_" . $path_info['filename'] . "." . $path_info['extension']);
+
         // SQL query
         $query = "INSERT INTO items (item_name, author, content, category_id, store_url, image) VALUES (:name, :author, :content, :category, :link, :img)";
 
+        echo($query);
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
         // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
@@ -92,5 +102,6 @@ if(filterInput()){
         // Then it is redirected to index.php.
         header("Location: index.php");
     }
+}
 }
 ?>

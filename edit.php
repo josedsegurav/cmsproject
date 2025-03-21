@@ -1,20 +1,36 @@
 <?php
+require('connect.php');
+require('authenticate.php');
 
-    // Require authentication script to protect data manipulation from unauthorized users
-    require 'authenticate.php';
-    require('connect.php');
+// If statement to verify if there is id data coming from the GET action.
+if(isset($_GET['id'])){
+    // If statemet to verify the input form the GET is an int.
+    if(filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)){
+        // Sanitizing id data into a number.
+        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
-// SQL query
-$query = "SELECT * FROM categories";
-// A PDO::Statement is prepared from the query. 
-$statement = $db->prepare($query);
-// Execution on the DB server.
-$statement->execute();
+        // SQL query
+        $query = "SELECT * FROM posts WHERE id = :id";
 
-$categories = $statement->fetchAll();
+        // A PDO::Statement is prepared from the query. 
+        $statement = $db->prepare($query);
+        // Bind the value of the id coming from the GET and sanitized into the query.
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
 
+        // Execution on the DB server.
+        $statement->execute();
+
+        // Get the data from the DB after the query was executed.
+        $row = $statement->fetch();
+
+    // If the input form the GET is not an int, it is redirected to index.php.
+    }else{
+    header("Location: index.php");
+    }
+}
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
