@@ -1,1 +1,4 @@
-RewriteEngine On    # Turn on the rewriting engine
+# Turn on the rewriting engine
+RewriteEngine on
+# Handle item edit request
+RewriteRule ^items/([0-9]+)/?$ edit.php?id=$1 [NC,L]

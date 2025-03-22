@@ -2,6 +2,14 @@
 require('connect.php');
 require('authenticate.php');
 
+session_start();
+
+if(!empty($_SESSION['message'])){
+    $message = $_SESSION['message'];
+    echo "<script>alert('{$message}')</script>";
+    unset($_SESSION['message']);
+}
+
 // SQL query
 $category_query = "SELECT * FROM categories";
 // A PDO::Statement is prepared from the query. 
@@ -59,13 +67,13 @@ if(isset($_GET['id'])){
     <div id="wrapper">
         <h2>Update Item</h2>
         <main>
-            <form action="process.php" enctype='multipart/form-data' method="post">
+            <form action="../process" enctype='multipart/form-data' method="post">
                 <input type="hidden" id="id" name="id" value="<?= $row['item_id'] ?>">
                 <label for="name">Item Name</label>
                 <input id="name" type="text" name="name" value="<?= $row['item_name'] ?>" required>
                 <label for="author">Author Name</label>
-                <input id="author" type="text" name="author" value="<?= $row['author'] ?>" required>
-                <img src="./images/medium_<?= $row['image'] ?>" />
+                <input id="author" type="text" name="author" value="<?= $row['author'] ?>">
+                <img src="../../images/medium_<?= $row['image'] ?>" />
                 <label for='file'>Image File:</label>
                 <input type='file' name='file' id='file'>
                 <label for="content">Content</label>

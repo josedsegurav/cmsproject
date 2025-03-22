@@ -30,7 +30,7 @@ $categories = $statement->fetchAll();
     <div id="wrapper">
         <h2>Add New Item</h2>
         <main>
-            <form action="process.php" enctype='multipart/form-data' method="post">
+            <form action="process" enctype='multipart/form-data' method="post">
                 <label for="name">Item Name</label>
                 <input id="name" type="text" name="name" required>
                 <label for="author">Author Name</label>
