@@ -2,6 +2,15 @@
 require('connect.php');
 require('authenticate.php');
 
+// SQL query
+$category_query = "SELECT * FROM categories";
+// A PDO::Statement is prepared from the query. 
+$statement = $db->prepare($category_query);
+// Execution on the DB server.
+$statement->execute();
+
+$categories = $statement->fetchAll();
+
 // If statement to verify if there is id data coming from the GET action.
 if(isset($_GET['id'])){
     // If statemet to verify the input form the GET is an int.
@@ -10,7 +19,11 @@ if(isset($_GET['id'])){
         $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
         // SQL query
-        $query = "SELECT * FROM posts WHERE id = :id";
+        $query =   "SELECT i.item_id, i.item_name, i.author, i.content, i.category_id, i.store_url, i.image, i.date_created, c.category_name 
+                    FROM items i 
+                    JOIN categories c ON c.category_id = i.category_id 
+                    WHERE i.item_id = :id";
+        
 
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
@@ -39,33 +52,38 @@ if(isset($_GET['id'])){
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Blog - New Post</title>
+    <title>Interiour Design Items - Update Item</title>
 </head>
 
 <body>
     <div id="wrapper">
-        <h2>Add New Item</h2>
+        <h2>Update Item</h2>
         <main>
             <form action="process.php" enctype='multipart/form-data' method="post">
+                <input type="hidden" id="id" name="id" value="<?= $row['item_id'] ?>">
                 <label for="name">Item Name</label>
-                <input id="name" type="text" name="name" required>
+                <input id="name" type="text" name="name" value="<?= $row['item_name'] ?>" required>
                 <label for="author">Author Name</label>
-                <input id="author" type="text" name="author" required>
+                <input id="author" type="text" name="author" value="<?= $row['author'] ?>" required>
+                <img src="./images/medium_<?= $row['image'] ?>" />
                 <label for='file'>Image File:</label>
-                <input type='file' name='file' id='file' required>
+                <input type='file' name='file' id='file'>
                 <label for="content">Content</label>
-                <textarea id="content" name="content" required></textarea>
+                <textarea id="content" name="content" required><?= $row['content'] ?></textarea>
                 <label for="category">Category</label>
-                <select id="category" type="text" name="category" required>
-                    <option>- Choose a Category -</option>
-                    <?php foreach ($categories as $row): ?>
-                    <option value="<?= $row['category_id'] ?>"><?= $row['category_name'] ?></option>
+                <select id="category" type="text" name="category" value="<?= $row['category_name'] ?>" required>
+                    <?php foreach ($categories as $category): ?>
+                    <option 
+                    value="<?= $category['category_id'] ?>"
+                    <?= ($category['category_id'] == $row['category_id']) ? 'selected' : '' ?>
+                    >
+                        <?= $category['category_name'] ?></option>
                     <?php endforeach ?>
                 </select>
                 <label for="link">Link to buy it</label>
-                <input id="link" type="url" name="link" required>
-                <input type="submit" id="submit" name="create" value="Create Post">
-
+                <input id="link" type="url" name="link" value="<?= $row['store_url'] ?>" required>
+                <input type="submit" id="submit" name="update" value="Update Item">
+                <input type="submit" id="delete" name="delete" value="Delete Item">
             </form>
         </main>
     </div>

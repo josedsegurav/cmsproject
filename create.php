@@ -48,7 +48,7 @@ $categories = $statement->fetchAll();
                 </select>
                 <label for="link">Link to buy it</label>
                 <input id="link" type="url" name="link" required>
-                <input type="submit" id="submit" name="create" value="Create Post">
+                <input type="submit" id="submit" name="create" value="Create Item">
 
             </form>
         </main>

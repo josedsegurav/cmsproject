@@ -29,6 +29,7 @@ $items = $statement->fetchAll();
                     <div>
                     <h2><a href="./"><?= $row['item_name'] ?></a></h2>
                     <span>Created by <?= $row['author'] ?> on <?= date("F d, Y, g:i a", strtotime($row['date_created'])) ?></span>
+                    <a href="edit.php?id=<?= $row['item_id'] ?>">edit item</a></p>
                     </div>
                     <img src="./images/medium_<?= $row['image'] ?>" />
                     <p>Description:</p>
