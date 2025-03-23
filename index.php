@@ -30,22 +30,22 @@ if(!empty($_SESSION['message'])){
 </head>
 
 <body>
-<?php include('nav.php'); ?>
-<?php foreach ($items as $row): ?>
-                <div>
-                    <div>
-                    <h2><a href="./"><?= $row['item_name'] ?></a></h2>
-                    <span>Created by <?= $row['author'] ?> on <?= date("F d, Y, g:i a", strtotime($row['date_created'])) ?></span>
-                    <a href="items/edit/<?= $row['item_id'] ?>">edit item</a></p>
-                    </div>
-                    <img src="./images/medium_<?= $row['image'] ?>" />
-                    <p>Description:</p>
-                    <span><?= $row['content'] ?></span>
-                    <p>Category: <span><?= $row['category_name'] ?></span></p>
-                    <a href="<?= $row['store_url'] ?>" target="_blank">Link of the store</a>
-                    
-                </div>
-            <?php endforeach ?>
+    <?php include('nav.php'); ?>
+    <?php foreach ($items as $row): ?>
+    <div>
+        <div>
+            <h2><a href="./"><?= $row['item_name'] ?></a></h2>
+            <span>Created by <?= $row['author'] ?> on
+                <?= date("F d, Y, g:i a", strtotime($row['date_created'])) ?></span>
+        </div>
+        <img src="./images/medium_<?= $row['image'] ?>" />
+        <p>Description:</p>
+        <span><?= $row['content'] ?></span>
+        <p>Category: <span><?= $row['category_name'] ?></span></p>
+        <a href="<?= $row['store_url'] ?>" target="_blank">Link of the store</a>
+
+    </div>
+    <?php endforeach ?>
 </body>
 
 </html>

@@ -3,8 +3,10 @@ RewriteEngine on
 # Handle index page
 RewriteRule ^./$ index.php [NC,L]
 # Handle create items request
-RewriteRule ^items/add$ create.php [NC,L]
+RewriteRule ^add$ create.php [NC,L]
+# Handle list page request
+RewriteRule ^items$ list.php [NC,L]
 # Handle item edit request
-RewriteRule ^items/edit/([0-9]+)/?$ edit.php?id=$1 [NC,L]
+RewriteRule ^items/edit/([0-9]+)$ edit.php?id=$1 [NC,L]
 # Handle process item request
 RewriteRule ^items/process?$ process.php [NC,L]
