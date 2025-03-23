@@ -30,6 +30,7 @@ if(!empty($_SESSION['message'])){
 </head>
 
 <body>
+<?php include('nav.php'); ?>
 <?php foreach ($items as $row): ?>
                 <div>
                     <div>

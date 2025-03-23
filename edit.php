@@ -64,6 +64,7 @@ if(isset($_GET['id'])){
 </head>
 
 <body>
+<?php include('nav.php'); ?>
     <div id="wrapper">
         <h2>Update Item</h2>
         <main>

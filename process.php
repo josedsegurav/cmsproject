@@ -50,6 +50,7 @@ function filterInput($temporary_file_path, $new_file_path) {
         isset($_POST['category']) &&
         !empty($_POST['link']) &&
         !(trim($_POST['name']) == '') &&
+        !(trim($_POST['author']) == '') &&
         !(trim($_POST['link']) == '') && 
         !(trim($_POST['content']) == '')
         ){

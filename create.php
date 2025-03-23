@@ -27,6 +27,7 @@ $categories = $statement->fetchAll();
 </head>
 
 <body>
+<?php include('nav.php'); ?>
     <div id="wrapper">
         <h2>Add New Item</h2>
         <main>
