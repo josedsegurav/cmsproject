@@ -4,6 +4,8 @@
     require 'authenticate.php';
     require('connect.php');
 
+$title = "Add Item";
+
 // SQL query
 $query = "SELECT * FROM categories";
 // A PDO::Statement is prepared from the query. 
@@ -15,23 +17,17 @@ $categories = $statement->fetchAll();
 
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Blog - New Post</title>
-</head>
+<?php include('htmlHead.php'); ?>
 
 <body>
-<?php include('nav.php'); ?>
+    <?php include('nav.php'); ?>
     <div id="wrapper">
         <h2>Add New Item</h2>
         <main>
-            <form action="process" enctype='multipart/form-data' method="post">
+            <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
                 <label for="name">Item Name</label>
                 <input id="name" type="text" name="name" required>
                 <label for="author">Author Name</label>
@@ -39,10 +35,10 @@ $categories = $statement->fetchAll();
                 <label for='file'>Image File:</label>
                 <input type='file' name='file' id='file' required>
                 <label for="content">Content</label>
-                <textarea id="content" name="content" required></textarea>
+                <textarea id="content" name="content" rows="20" cols="50" required></textarea>
                 <label for="category">Category</label>
-                <select id="category" type="text" name="category" required>
-                    <option>- Choose a Category -</option>
+                <select id="category" name="category" required>
+                    <option value="">- Choose a Category -</option>
                     <?php foreach ($categories as $row): ?>
                     <option value="<?= $row['category_id'] ?>"><?= $row['category_name'] ?></option>
                     <?php endforeach ?>
@@ -54,6 +50,14 @@ $categories = $statement->fetchAll();
             </form>
         </main>
     </div>
+    <script>
+    var textarea = document.getElementById('content');
+    sceditor.create(textarea, {
+        format: 'bbcode',
+        style: 'minified/themes/content/default.min.css',
+        toolbarExclude: 'table,code,quote,horizontalrule,image,email,link,unlink,emoticon,youtube,date,time,ltr,rtl,print,maximize,source,font,size,color,removeformat,subscript,superscript'
+    });
+    </script>
 </body>
 
 </html>

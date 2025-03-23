@@ -3,6 +3,8 @@ session_start();
 
 require('connect.php');
 
+$title = "Home";
+
 // SQL query
 $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, c.category_name FROM items i JOIN categories c ON c.category_id = i.category_id";
 // A PDO::Statement is prepared from the query. 
@@ -23,11 +25,7 @@ if(!empty($_SESSION['message'])){
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<?php include('htmlHead.php'); ?>
 
 <body>
     <?php include('nav.php'); ?>
@@ -38,7 +36,7 @@ if(!empty($_SESSION['message'])){
             <span>Created by <?= $row['author'] ?> on
                 <?= date("F d, Y, g:i a", strtotime($row['date_created'])) ?></span>
         </div>
-        <img src="./images/medium_<?= $row['image'] ?>" />
+        <img src="./images/medium_<?= $row['image'] ?>" alt="<?= $row['image'] ?>">
         <p>Description:</p>
         <span><?= $row['content'] ?></span>
         <p>Category: <span><?= $row['category_name'] ?></span></p>

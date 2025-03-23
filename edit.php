@@ -10,6 +10,8 @@ if(!empty($_SESSION['message'])){
     unset($_SESSION['message']);
 }
 
+$title = "Update Item.";
+
 // SQL query
 $category_query = "SELECT * FROM categories";
 // A PDO::Statement is prepared from the query. 
@@ -56,38 +58,36 @@ if(isset($_GET['id'])){
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interiour Design Items - Update Item</title>
-</head>
+<?php include('htmlHead.php'); ?>
 
 <body>
-<nav>
+<?php include('nav.php'); ?>
+
+<!-- <nav>
     <h1><a href="../../">Interiour Design Items</a></h1>
     <ul>
         <li><a href="../../">Home</a></li>
         <li><a href="../../add">Add Item</a></li>
         <li><a href="../../items">Items List</a></li>
     </ul>
-</nav>
+</nav> -->
     <div id="wrapper">
         <h2>Update Item</h2>
         <main>
-            <form action="../process" enctype='multipart/form-data' method="post">
+            <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
                 <input type="hidden" id="id" name="id" value="<?= $row['item_id'] ?>">
                 <label for="name">Item Name</label>
                 <input id="name" type="text" name="name" value="<?= $row['item_name'] ?>" required>
                 <label for="author">Author Name</label>
                 <input id="author" type="text" name="author" value="<?= $row['author'] ?>">
-                <img src="../../images/medium_<?= $row['image'] ?>" />
+                <img src="../../images/medium_<?= $row['image'] ?>" alt="<?= $row['image'] ?>">
                 <label for='file'>Image File:</label>
                 <input type='file' name='file' id='file'>
                 <label for="content">Content</label>
-                <textarea id="content" name="content" required><?= $row['content'] ?></textarea>
+                <textarea id="content" name="content" rows="20" cols="50" required><?= $row['content'] ?></textarea>
                 <label for="category">Category</label>
-                <select id="category" type="text" name="category" value="<?= $row['category_name'] ?>" required>
+                <select id="category" name="category" required>
+                <option value="">- Choose a Category -</option>
                     <?php foreach ($categories as $category): ?>
                     <option 
                     value="<?= $category['category_id'] ?>"
@@ -103,6 +103,14 @@ if(isset($_GET['id'])){
             </form>
         </main>
     </div>
+    <script>
+    var textarea = document.getElementById('content');
+    sceditor.create(textarea, {
+        format: 'bbcode',
+        style: 'minified/themes/content/default.min.css',
+        toolbarExclude: 'table,code,quote,horizontalrule,image,email,link,unlink,emoticon,youtube,date,time,ltr,rtl,print,maximize,source,font,size,color,removeformat,subscript,superscript'
+    });
+    </script>
 </body>
 
 </html>

@@ -7,6 +7,27 @@ require '\xampp\htdocs\webdev2\project\utils\lib\ImageResizeException.php';
 
 use \Gumlet\ImageResize;
 
+$title = "Item Processing";
+
+function filterInput() {
+    if (
+        $_POST && 
+        !empty($_POST['name']) && 
+        !empty($_POST['author']) &&
+        !empty($_POST['content']) &&
+        isset($_POST['category']) &&
+        !empty($_POST['link']) &&
+        !(trim($_POST['name']) == '') &&
+        !(trim($_POST['author']) == '') &&
+        !(trim($_POST['link']) == '') && 
+        !(trim($_POST['content']) == '')
+        ){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 function file_upload_path($original_filename, $upload_subfolder_name = 'images') {
     $current_folder = dirname(__FILE__);
     
@@ -40,35 +61,19 @@ if ($file_upload_detected) {
     $inputError = false;
 
 // Function to verify there is data coming from the forms, and not blank or just whitespaces on the inputs.
-function filterInput($temporary_file_path, $new_file_path) {
-    if (
-        $_POST && 
-        !empty($_POST['name']) && 
-        !empty($_POST['author']) &&
-        file_is_an_image($temporary_file_path, $new_file_path) &&
-        !empty($_POST['content']) &&
-        isset($_POST['category']) &&
-        !empty($_POST['link']) &&
-        !(trim($_POST['name']) == '') &&
-        !(trim($_POST['author']) == '') &&
-        !(trim($_POST['link']) == '') && 
-        !(trim($_POST['content']) == '')
-        ){
-        return true;
-    }else{
-        return false;
-    }
-}
 
 
-
-if(filterInput($temporary_file_path, $new_file_path)){
+if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     // If statement that checks if the data is coming from the create button from the create.php file.
     if(isset($_POST['create'])){
         // Sanitize special characters from the data. 
+        $itemContent = $_POST['content'];
+
+        $content = strip_tags($itemContent);
+        
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $author = filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $content = filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
         $link = filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $img = $file_filename;
@@ -85,13 +90,12 @@ if(filterInput($temporary_file_path, $new_file_path)){
         $query = "INSERT INTO items (item_name, author, content, category_id, store_url, image) 
                 VALUES (:name, :author, :content, :category, :link, :img)";
 
-        echo($query);
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
         // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
         $statement->bindValue(':name', $name, PDO::PARAM_STR);
         $statement->bindValue(':author', $author, PDO::PARAM_STR);
-        $statement->bindValue(':content', $content, PDO::PARAM_STR);
+        $statement->bindValue(':content', strip_tags($content), PDO::PARAM_STR);
         $statement->bindValue(':category', $category, PDO::PARAM_INT);
         $statement->bindValue(':link', $link, PDO::PARAM_STR);
         $statement->bindValue(':img', $img, PDO::PARAM_STR);
@@ -105,7 +109,7 @@ if(filterInput($temporary_file_path, $new_file_path)){
         // Then it is redirected to index.php.
         session_start();
         $_SESSION['message'] = "Item Created.";
-        header("Location: ../");
+        header("Location: /webdev2/project/");
     }
 
     if(isset($_POST['id']) && isset($_POST['update'])){
@@ -147,23 +151,7 @@ if(filterInput($temporary_file_path, $new_file_path)){
     $inputError = true;
 }
 }else{
-    function filterInput() {
-        if (
-            $_POST && 
-            !empty($_POST['name']) && 
-            !empty($_POST['author']) &&
-            !empty($_POST['content']) &&
-            isset($_POST['category']) &&
-            !empty($_POST['link']) &&
-            !(trim($_POST['name']) == '') &&
-            !(trim($_POST['link']) == '') && 
-            !(trim($_POST['content']) == '')
-            ){
-            return true;
-        }else{
-            return false;
-        }
-    }
+
     if(filterInput()){
         if($_FILES['file']['error'] === 4 && isset($_POST['id']) && isset($_POST['update'])){
             // Sanitizing id data into a number.
@@ -244,24 +232,23 @@ header("Location: ../");
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Post Process</title>
-</head>
+<?php include('htmlHead.php'); ?>
 
 <body>
+    <?php include('nav.php'); ?>
     <?php if ($upload_error_detected): ?>
     <p>There is a problem with the image. Error Number: <?= $_FILES['file']['error'] ?></p>
-    <?php elseif(!$file_upload_detected && isset($_POST['file']) && !isset($_POST['delete'])): ?>
-    <!-- If statement to display an error if data does not meet function filterInput requirements and it is not coming from the delete button -->
+    <?php endif ?>
+    <?php if(!filterInput()): ?>
     <div id="wrapper">
-        <!-- Nav imported from php file  -->
         <h2>There is an error on the entry.</h2>
         <p>Verify that all fields are properly filled.</p>
-        <a href="index.php">Return Home</a>
+    </div>
+    <?php endif ?>
+    <?php if(!$file_upload_detected && isset($_POST['file']) && !isset($_POST['delete'])): ?>
+    <div id="wrapper">
+        <h2>There is an error on the entry.</h2>
+        <p>Verify that all fields are properly filled.</p>
     </div>
     <!-- If statement to display a confirm form if the data is coming from the delete button on edit.php file -->
     <?php elseif($_FILES['file']['error'] === 4 && isset($_POST['delete'])): ?>

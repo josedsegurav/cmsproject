@@ -1,6 +1,8 @@
 <?php
     require 'authenticate.php';
     require 'connect.php';
+
+    $title = "Items List";
     // SQL query
     $category_query = "SELECT * FROM categories";
     // A PDO::Statement is prepared from the query.
@@ -225,32 +227,27 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<?php include('htmlHead.php'); ?>
 
 <body>
     <?php include 'nav.php'; ?>
     <form method="post">
         <p>Sort List By:</p>
-        <label>Item Name
+        <label>Item Name</label>
             <input type="submit" id="nameAsc" name="sortByNameAsc" value="⬆ a-z">
             <input type="submit" id="nameDesc" name="sortByNameDesc" value="⬇ z-a">
-        </label>
-        <label >Author Name
+        <label >Author Name</label>
             <input type="submit" id="authorAsc" name="sortByAuthorAsc" value="⬆ a-z">
             <input type="submit" id="authorDesc" name="sortByAuthorDesc" value="⬇ z-a">
-        </label>
-        <label >Category
+        
+        <label >Category</label>
         <input type="submit" id="categoryAsc" name="sortByCategoryAsc" value="⬆ a-z">
         <input type="submit" id="categoryDesc" name="sortByCategoryDesc" value="⬇ z-a">
-        </label>
-        <label >Date Created
+        
+        <label >Date Created</label>
         <input type="submit" id="dateAsc" name="sortByDateAsc" value="⬆">
         <input type="submit" id="dateDesc" name="sortByDateDesc" value="⬇">
-        </label>
+        
     </form>
     <form method="post">
         <label for="name">Item Name</label>
@@ -258,7 +255,7 @@
         <label for="author">Author Name</label>
         <input id="author" type="text" name="author">
         <label for="category">Category</label>
-        <select id="category" type="text" name="category">
+        <select id="category" name="category">
             <option value="" disabled selected>- Choose a Category -</option>
             <?php foreach ($categories as $category): ?>
             <option value="<?= $category['category_id']?>"><?= $category['category_name']?></option>
