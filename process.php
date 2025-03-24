@@ -2,13 +2,14 @@
 
 // Require database data
 require('connect.php');
+// Require library to resize images
 require '\xampp\htdocs\webdev2\project\utils\lib\ImageResize.php';
 require '\xampp\htdocs\webdev2\project\utils\lib\ImageResizeException.php';
 
 use \Gumlet\ImageResize;
-
+// Variable to add a name to the title in the html head tag
 $title = "Item Processing";
-
+// Filter empty inputs form the form.
 function filterInput() {
     if (
         $_POST && 
@@ -28,6 +29,8 @@ function filterInput() {
     }
 }
 
+// file_upload_path() - Safely build a path String that uses slashes appropriate for our OS.
+// Default upload path is an 'uploads' sub-folder in the current folder.
 function file_upload_path($original_filename, $upload_subfolder_name = 'images') {
     $current_folder = dirname(__FILE__);
     
@@ -35,7 +38,8 @@ function file_upload_path($original_filename, $upload_subfolder_name = 'images')
     
     return join(DIRECTORY_SEPARATOR, $path_segments);
  }
-
+    
+ // file_is_an_image() - Checks the mime-type & extension of the uploaded file for "image-ness".
  function file_is_an_image($temporary_path, $new_path) {
     $allowed_mime_types      = ['image/gif', 'image/jpeg', 'image/png'];
     $allowed_file_extensions = ['gif', 'jpg', 'jpeg', 'png'];
@@ -49,19 +53,16 @@ function file_upload_path($original_filename, $upload_subfolder_name = 'images')
     return $file_extension_is_valid && $mime_type_is_valid;
 }
 
+// Variables to verify if a file has been uploaded, and if there has been errors during the upload process.
 $file_upload_detected = isset($_FILES['file']) && ($_FILES['file']['error'] === 0);
 $upload_error_detected = isset($_FILES['file']) && ($_FILES['file']['error'] > 0);
 
+// Check if the file is uploaded, get the data form the file and prepare it to move it to the storage.
 if ($file_upload_detected) {
     $original_file        =  $_FILES['file'];
     $file_filename        = $original_file['name'];
     $temporary_file_path  = $original_file['tmp_name'];
     $new_file_path        = file_upload_path($file_filename);
-
-    $inputError = false;
-
-// Function to verify there is data coming from the forms, and not blank or just whitespaces on the inputs.
-
 
 if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     // If statement that checks if the data is coming from the create button from the create.php file.
@@ -106,9 +107,10 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
 
         $row = $statement->fetch();
 
-        // Then it is redirected to index.php.
+        // Variable session message added with create message.
         session_start();
         $_SESSION['message'] = "Item Created.";
+        // Then it is redirected to index.php.
         header("Location: /webdev2/project/");
     }
 
@@ -122,7 +124,15 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
         $link = filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $img = $file_filename;
+
+        move_uploaded_file($temporary_file_path, $new_file_path);
     
+        $path_info = pathinfo($new_file_path);
+
+        $medium_image = new ImageResize($new_file_path);
+        $medium_image->resizeToWidth(300);
+        $medium_image->save($path_info['dirname'] . DIRECTORY_SEPARATOR . "medium_" . $path_info['filename'] . "." . $path_info['extension']);
+
         // SQL query
         $query = "UPDATE items 
                 SET item_name = :name, author = :author, content = :content, category_id = :category, store_url = :link, image = :img 
@@ -141,18 +151,56 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     
         // Execution on the DB server.
         $statement->execute();
+        // Variable session message added with update message.
         session_start();
         $_SESSION['message'] = "Item Updated.";
     
         // Then it is redirected to edit.php according to it's id data.
         header("Location: edit/{$id}");
     }
-}else{
-    $inputError = true;
 }
 }else{
 
     if(filterInput()){
+        // If statement that checks if the data is coming from the create button from the create.php file.
+    if(isset($_POST['create'])){
+        // Sanitize special characters from the data. 
+        $itemContent = $_POST['content'];
+
+        $content = strip_tags($itemContent);
+        
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $author = filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $content = filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
+        $link = filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        // SQL query
+        $query = "INSERT INTO items (item_name, author, content, category_id, store_url) 
+                VALUES (:name, :author, :content, :category, :link)";
+
+        // A PDO::Statement is prepared from the query. 
+        $statement = $db->prepare($query);
+        // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
+        $statement->bindValue(':name', $name, PDO::PARAM_STR);
+        $statement->bindValue(':author', $author, PDO::PARAM_STR);
+        $statement->bindValue(':content', strip_tags($content), PDO::PARAM_STR);
+        $statement->bindValue(':category', $category, PDO::PARAM_INT);
+        $statement->bindValue(':link', $link, PDO::PARAM_STR);
+
+        // Execution on the DB server.
+        $statement->execute();
+        // Get the data from the DB after the query was executed.
+        $row = $statement->fetch();
+
+        // Variable session message added with create message.
+        session_start();
+        $_SESSION['message'] = "Item Created.";
+        // Then it is redirected to index.php.
+        header("Location: /webdev2/project/");
+    }
+
+        // Check if the error is an empty file input, if the id is set and the request comes from edit.php update button.
         if($_FILES['file']['error'] === 4 && isset($_POST['id']) && isset($_POST['update'])){
             // Sanitizing id data into a number.
             $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
@@ -180,20 +228,19 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
             // Execution on the DB server.
             $statement->execute();
+            // Variable session message added with update message.
             session_start();
             $_SESSION['message'] = "Item Updated.";
         
             // Then it is redirected to edit.php according to it's id data.
             header("Location: edit/{$id}");
         }
-    }else{
-        $inputError = true;
     }
 }
 
+// Verify if the request comes from edit.php delete button and if the id is set.
 if(isset($_POST['delete']) && isset($_POST['id'])){
 
-    $upload_error_detected = false;
     // Sanitizing id data into a number.
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
 }
@@ -214,6 +261,7 @@ $statement->bindValue(':id', $id, PDO::PARAM_INT);
 // Execution on the DB server.
 $statement->execute();
 
+// Variable session message added with delete message.
 session_start();
 $_SESSION['message'] = "Item Deleted.";
 
@@ -231,28 +279,29 @@ header("Location: ../");
 
 <!DOCTYPE html>
 <html lang="en">
-
+<!-- Include head tag from template -->
 <?php include('htmlHead.php'); ?>
 
 <body>
+    <!-- Include nav tag from template -->
     <?php include('nav.php'); ?>
-    <?php if ($upload_error_detected): ?>
-    <p>There is a problem with the image. Error Number: <?= $_FILES['file']['error'] ?></p>
-    <?php endif ?>
+    <!-- Error message if there are empty inputs -->
     <?php if(!filterInput()): ?>
-    <div id="wrapper">
+    <div>
         <h2>There is an error on the entry.</h2>
         <p>Verify that all fields are properly filled.</p>
     </div>
     <?php endif ?>
-    <?php if(!$file_upload_detected && isset($_POST['file']) && !isset($_POST['delete'])): ?>
-    <div id="wrapper">
+    <!-- Error message if there no file is uploaded and the request is not from the delete button -->
+    <?php if(!$file_upload_detected && !isset($_POST['delete'])): ?>
+    <div>
         <h2>There is an error on the entry.</h2>
-        <p>Verify that all fields are properly filled.</p>
+        <p>Verify that you are uploading an image.</p>
     </div>
-    <!-- If statement to display a confirm form if the data is coming from the delete button on edit.php file -->
+    <!-- Display a confirm form if there is no file bieng uploaded and the data is coming from the delete button on edit.php -->
     <?php elseif($_FILES['file']['error'] === 4 && isset($_POST['delete'])): ?>
-    <div id="wrapper">
+    <div>
+        <!-- Delete confirmation form -->
         <form method="post">
             <fieldset>
                 <p>Confirm to delete post.

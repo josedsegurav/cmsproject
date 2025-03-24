@@ -1,3 +1,4 @@
+<!-- Head tag template to add a dynamic title and set scripts for create and edit files -->
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">

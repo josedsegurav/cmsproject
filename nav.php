@@ -1,6 +1,7 @@
 <?php
 
 ?>
+<!-- Nav template -->
 <nav>
     <h1><a href="/webdev2/project/">Interiour Design Items</a></h1>
     <ul>
