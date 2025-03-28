@@ -16,7 +16,7 @@ function filterInput() {
         !empty($_POST['name']) && 
         !empty($_POST['author']) &&
         !empty($_POST['content']) &&
-        isset($_POST['category']) &&
+        (isset($_POST['category']) || !empty($_POST['newCategory'])) &&
         !empty($_POST['link']) &&
         !(trim($_POST['name']) == '') &&
         !(trim($_POST['author']) == '') &&
@@ -28,6 +28,31 @@ function filterInput() {
         return false;
     }
 }
+
+function getInputs(){
+if(filterInput()){
+    $itemContent = $_POST['content'];
+
+    $content = strip_tags($itemContent);
+
+    $nameInput = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_URL);
+    $slug = str_replace(" ", "-", $nameInput);
+
+    
+    $inputs = [
+            'name' => filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'author' => filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'content' => filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'category' => filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT),
+            'link' => filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'slug' => filter_var($slug, FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+    ];
+
+    return $inputs;
+}
+}
+
+getInputs();
 
 // file_upload_path() - Safely build a path String that uses slashes appropriate for our OS.
 // Default upload path is an 'uploads' sub-folder in the current folder.
@@ -68,15 +93,13 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     // If statement that checks if the data is coming from the create button from the create.php file.
     if(isset($_POST['create'])){
         // Sanitize special characters from the data. 
-        $itemContent = $_POST['content'];
-
-        $content = strip_tags($itemContent);
         
-        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $author = filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $content = filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
-        $link = filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $author = filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $content = filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
+        // $newCategory = filter_input(INPUT_POST, 'newCategory', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $link = filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $img = $file_filename;
 
         move_uploaded_file($temporary_file_path, $new_file_path);
@@ -88,18 +111,19 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $medium_image->save($path_info['dirname'] . DIRECTORY_SEPARATOR . "medium_" . $path_info['filename'] . "." . $path_info['extension']);
 
         // SQL query
-        $query = "INSERT INTO items (item_name, author, content, category_id, store_url, image) 
-                VALUES (:name, :author, :content, :category, :link, :img)";
+        $query = "INSERT INTO items (item_name, author, content, category_id, store_url, image, slug) 
+                VALUES (:name, :author, :content, :category, :link, :img, :slug)";
 
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
         // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
-        $statement->bindValue(':name', $name, PDO::PARAM_STR);
-        $statement->bindValue(':author', $author, PDO::PARAM_STR);
-        $statement->bindValue(':content', strip_tags($content), PDO::PARAM_STR);
-        $statement->bindValue(':category', $category, PDO::PARAM_INT);
-        $statement->bindValue(':link', $link, PDO::PARAM_STR);
+        $statement->bindValue(':name', getInputs()['name'], PDO::PARAM_STR);
+        $statement->bindValue(':author', getInputs()['author'], PDO::PARAM_STR);
+        $statement->bindValue(':content', strip_tags(getInputs()['content']), PDO::PARAM_STR);
+        $statement->bindValue(':category', getInputs()['category'], PDO::PARAM_INT);
+        $statement->bindValue(':link', getInputs()['link'], PDO::PARAM_STR);
         $statement->bindValue(':img', $img, PDO::PARAM_STR);
+        $statement->bindValue(':slug', getInputs()['slug'], PDO::PARAM_STR);
 
         // Execution on the DB server.
         $statement->execute();
@@ -116,11 +140,15 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
 
     if(isset($_POST['id']) && isset($_POST['update'])){
         // Sanitizing id data into a number.
+
+        $itemContent = $_POST['content'];
+
+        $content = strip_tags($itemContent);
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
         // Sanitize special characters from the data.
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $author = filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $content = filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
         $link = filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $img = $file_filename;
@@ -203,11 +231,14 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         // Check if the error is an empty file input, if the id is set and the request comes from edit.php update button.
         if($_FILES['file']['error'] === 4 && isset($_POST['id']) && isset($_POST['update'])){
             // Sanitizing id data into a number.
+            $itemContent = $_POST['content'];
+
+            $content = strip_tags($itemContent);
             $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
             // Sanitize special characters from the data.
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $author = filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $content = filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
             $link = filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         
@@ -293,10 +324,10 @@ header("Location: ../");
     </div>
     <?php endif ?>
     <!-- Error message if there no file is uploaded and the request is not from the delete button -->
-    <?php if(!$file_upload_detected && !isset($_POST['delete'])): ?>
+    <?php if(($upload_error_detected != 0 && !isset($_POST['delete'])) || (!file_is_an_image($temporary_file_path, $new_file_path) && !isset($_POST['delete']))): ?>
     <div>
-        <h2>There is an error on the entry.</h2>
-        <p>Verify that you are uploading an image.</p>
+        <h2>There is an error code: <?= $_FILES['file']['error'] ?> on the entry.</h2>
+        <p>Verify that you are uploading an image file.</p>
     </div>
     <!-- Display a confirm form if there is no file bieng uploaded and the data is coming from the delete button on edit.php -->
     <?php elseif($_FILES['file']['error'] === 4 && isset($_POST['delete'])): ?>

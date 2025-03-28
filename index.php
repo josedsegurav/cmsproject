@@ -36,14 +36,23 @@ if(!empty($_SESSION['message'])){
             <span>Created by <?= $row['author'] ?> on
                 <?= date("F d, Y, g:i a", strtotime($row['date_created'])) ?></span>
         </div>
-        <img src="./images/medium_<?= $row['image'] ?>" alt="<?= $row['image'] ?>">
+        <div class="image">
+            <a href="./images/<?= $row['image'] ?>"><img src="./images/medium_<?= $row['image'] ?>"
+                    alt="<?= $row['image'] ?>"></a>
+        </div>
         <p>Description:</p>
         <span><?= $row['content'] ?></span>
         <p>Category: <span><?= $row['category_name'] ?></span></p>
-        <a href="<?= $row['store_url'] ?>" target="_blank">Link of the store</a>
+        <a id="lbox" href="<?= $row['store_url'] ?>" target="_blank">Link of the store</a>
 
     </div>
     <?php endforeach ?>
+    <script>
+        var galleryOpts = {  arrowNavigation: false
+        };
+    new LuminousGallery(document.querySelectorAll(".image a"),galleryOpts);
+    
+    </script>
 </body>
 
 </html>
