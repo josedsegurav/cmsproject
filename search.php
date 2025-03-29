@@ -3,24 +3,10 @@ session_start();
 
 require('connect.php');
 
-$title = "Browse Items";
+$title = "Results";
 
-// SQL query
-$query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name 
-        FROM items i JOIN categories c ON c.category_id = i.category_id";
-// A PDO::Statement is prepared from the query. 
-$statement = $db->prepare($query);
-// Execution on the DB server.
-$statement->execute();
 
-$items = $statement->fetchAll();
 
-if(!empty($_SESSION['message'])){
-    $message = $_SESSION['message'];
-    echo "<script>alert('{$message}')</script>";
-    unset($_SESSION['message']);
-}
-// If statement to verify if there is id data coming from the GET action.
 if(isset($_GET['p'])){
         // Sanitizing id data into a string.
         $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);

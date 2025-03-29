@@ -11,7 +11,7 @@ RewriteRule ^$ index.php [NC,L]
 RewriteRule ^browse$ browse.php [NC,L]
 
 # Handle browse categories link request
-RewriteRule ^browse/([0-9]+)/([^/]+)$ browse.php?id=$1&p=$2 [NC,L]
+RewriteRule ^browse/([^/]+)$ browse.php?p=$1 [NC,L]
 
 # Handle create items request
 RewriteRule ^add$ create.php [NC,L]
