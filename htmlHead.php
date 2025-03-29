@@ -11,6 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/luminous-lightbox/2.0.1/luminous-basic.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/luminous-lightbox/2.0.1/Luminous.min.js"></script>
-    <link rel="stylesheet" href="./styles/style.css">
+    <link rel="stylesheet" href="/webdev2/project/styles/style.css">
     <title>Interiour Design Items - <?= $title ?></title>
 </head>

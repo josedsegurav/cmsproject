@@ -1,3 +1,7 @@
+.lum-lightbox {
+    z-index: 1030;
+}
+
 .lum-gallery-button {
     display: none;
 }

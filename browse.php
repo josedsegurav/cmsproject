@@ -38,7 +38,6 @@ if(!empty($_SESSION['message'])){
                 <?= date("F d, Y, g:i a", strtotime($row['date_created'])) ?></span>
         </div>
         <p>Category: <span><?= $row['category_name'] ?></span></p>
-        <a id="lbox" href="<?= $row['store_url'] ?>" target="_blank">Link of the store</a>
 
     </div>
     <?php endforeach ?>
