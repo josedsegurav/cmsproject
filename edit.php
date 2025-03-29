@@ -27,22 +27,31 @@ if(isset($_GET['id'])){
     if(filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)){
         // Sanitizing id data into a number.
         $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
         // SQL query
-        $query =   "SELECT i.item_id, i.item_name, i.author, i.content, i.category_id, i.store_url, i.image, i.date_created, c.category_name 
+        $query =   "SELECT i.item_id, i.item_name, i.author, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name 
                     FROM items i 
                     JOIN categories c ON c.category_id = i.category_id 
-                    WHERE i.item_id = :id";
+                    WHERE i.item_id = :id
+                    AND i.slug = :slug";
 
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
         // Bind the value of the id coming from the GET and sanitized into the query.
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
 
         // Execution on the DB server.
         $statement->execute();
 
         // Get the data from the DB after the query was executed.
-        $row = $statement->fetch();
+        $item = $statement->fetch();
+
+        if (!$item) {
+            header("HTTP/1.0 404 Not Found");
+            echo "Page not found or URL has been modified";
+            exit;
+        }
 
     // If the input form the GET is not an int, it is redirected to index.php.
     }else{
@@ -105,26 +114,26 @@ if(isset($_POST['createCategory'])){
             </form>
             <!-- Form sending the data to process.php -->
             <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
-                <input type="hidden" id="id" name="id" value="<?= $row['item_id'] ?>">
+                <input type="hidden" id="id" name="id" value="<?= $item['item_id'] ?>">
                 <label for="name">Item Name</label>
-                <input id="name" type="text" name="name" value="<?= $row['item_name'] ?>" required>
+                <input id="name" type="text" name="name" value="<?= $item['item_name'] ?>" required>
 
                 <label for="author">Author Name</label>
-                <input id="author" type="text" name="author" value="<?= $row['author'] ?>">
+                <input id="author" type="text" name="author" value="<?= $item['author'] ?>">
 
-                <img src="../../images/medium_<?= $row['image'] ?>" alt="<?= $row['image'] ?>">
+                <img src="../../images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>">
                 <label for='file'>Image File:</label>
                 <input type='file' name='file' id='file'>
 
                 <label for="content">Content</label>
-                <textarea id="content" name="content" rows="20" cols="50" required><?= $row['content'] ?></textarea>
+                <textarea id="content" name="content" rows="20" cols="50" required><?= $item['content'] ?></textarea>
 
                 <label for="category">Category</label>
                 <select id="category" name="category" required>
                     <option value="" disabled>- Choose a Category -</option>
                     <?php foreach ($categories as $category): ?>
                     <option value="<?= $category['category_id'] ?>"
-                        <?= ($category['category_id'] == $row['category_id']) ? 'selected' : '' ?>>
+                        <?= ($category['category_id'] == $item['category_id']) ? 'selected' : '' ?>>
                         <?= $category['category_name'] ?></option>
                     <?php endforeach ?>
                 </select>
@@ -133,7 +142,7 @@ if(isset($_POST['createCategory'])){
                 <input id="newCategory" type="text" name="newCategory">
 
                 <label for="link">Link to buy it</label>
-                <input id="link" type="text" name="link" value="<?= $row['store_url'] ?>" required>
+                <input id="link" type="text" name="link" value="<?= $item['store_url'] ?>" required>
 
                 <input type="submit" id="submit" name="update" value="Update Item">
                 <input type="submit" id="delete" name="delete" value="Delete Item">

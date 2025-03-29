@@ -14,7 +14,7 @@
     $categories = $categoryStatement->fetchAll();
 
     // SQL query to display first set of information being order by date created Asc
-    $general_query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, c.category_name
+    $general_query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
         FROM items i
         JOIN categories c ON c.category_id = i.category_id
         ORDER BY i.date_created";
@@ -58,7 +58,7 @@
     }
 
     // Variable as a main query template
-    $mainQuery = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, c.category_name
+    $mainQuery = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
     FROM items i
     JOIN categories c ON c.category_id = i.category_id";
 
@@ -190,7 +190,7 @@
         if (filterInput($_POST['name'])) {
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-            $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, c.category_name
+            $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
         FROM items i
         JOIN categories c ON c.category_id = i.category_id
         WHERE i.item_name LIKE :name
@@ -211,7 +211,7 @@
         if (filterInput($_POST['author'])) {
             $author = filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-            $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, c.category_name
+            $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
         FROM items i
         JOIN categories c ON c.category_id = i.category_id
         WHERE i.author LIKE :author
@@ -232,7 +232,7 @@
         if (isset($_POST['category'])) {
             $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
 
-            $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, c.category_name
+            $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
         FROM items i
         JOIN categories c ON c.category_id = i.category_id
         WHERE i.category_id = :category
