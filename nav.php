@@ -53,7 +53,7 @@ $navCategories = $navStatement->fetchAll();
             </ul>
             <div class="d-flex gap-3">
                 <div class="d-flex justify-content-center">
-                    <form action="search.php" method="post" class="d-flex">
+                    <form action="/webdev2/project/search" method="post" class="d-flex">
                         <input id="searchInput" name="searchInput" type="text" class="form-control search-bar me-2" placeholder="Search for items..."
                             style="max-width: 500px;">
                         <button class="btn btn-warning"><i class="fas fa-search"></i></button>
