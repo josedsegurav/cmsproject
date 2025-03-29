@@ -39,7 +39,7 @@ $categories = $statement->fetchAll();
                         </a>
                         <ul class="dropdown-menu">
                             <?php foreach($categories as $category): ?>
-                            <li><a class="dropdown-item" href="#"><?= $category['category_name'] ?></a></li>
+                            <li><a class="dropdown-item" href="/webdev2/project/browse/<?= $category['category_id'] ?>/<?= $category['category_name'] ?>"><?= $category['category_name'] ?></a></li>
                             <?php endforeach ?>
                         </ul>
                     </li>

@@ -17,15 +17,20 @@ $categories = $statement->fetchAll();
 
 if(isset($_POST['createCategory'])){
 
-    $newCategory = filter_input(INPUT_POST, 'newCategory', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    // Replacing spaces for dashes from name input to use it as a slug.
+    $filterSlug = str_replace(" ", "-", $_POST['newCategory']);
 
-    $query = "INSERT INTO categories (category_name) 
-    VALUES (:newCategory)";
+    $newCategory = filter_input(INPUT_POST, 'newCategory', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $slug = filter_var($filterSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    $query = "INSERT INTO categories (category_name, category_slug) 
+    VALUES (:newCategory, :slug)";
 
     // A PDO::Statement is prepared from the query. 
     $statement = $db->prepare($query);
     // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
     $statement->bindValue(':newCategory', $newCategory, PDO::PARAM_STR);
+    $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
 
     // Execution on the DB server.
     $statement->execute();

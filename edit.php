@@ -60,26 +60,33 @@ if(isset($_GET['id'])){
 }
 
 if(isset($_POST['createCategory'])){
-    $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $newCategory = filter_input(INPUT_POST, 'newCategory', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+   // Replacing spaces for dashes from name input to use it as a slug.
+   $filterSlug = str_replace(" ", "-", $_POST['newCategory']);
 
-    $query = "INSERT INTO categories (category_name) 
-    VALUES (:newCategory)";
+   $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+   $slugItem = filter_input(INPUT_POST, 'slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+   $newCategory = filter_input(INPUT_POST, 'newCategory', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+   $slug = filter_var($filterSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-    // A PDO::Statement is prepared from the query. 
-    $statement = $db->prepare($query);
-    // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
-    $statement->bindValue(':newCategory', $newCategory, PDO::PARAM_STR);
+   $query = "INSERT INTO categories (category_name, category_slug) 
+   VALUES (:newCategory, :slug)";
+
+   // A PDO::Statement is prepared from the query. 
+   $statement = $db->prepare($query);
+   // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
+   $statement->bindValue(':newCategory', $newCategory, PDO::PARAM_STR);
+   $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
 
     // Execution on the DB server.
     $statement->execute();
 
-    header("Location: /webdev2/project/items/edit/{$id}");
+    header("Location: /webdev2/project/items/edit/{$id}/{$slugItem}");
 
 }elseif (isset($_POST['cancelCreateCategory'])) {
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $slug = filter_input(INPUT_POST, 'slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     // It is redirected to edit.php according to it's id data.
-    header("Location: /webdev2/project/items/edit/{$id}");
+    header("Location: /webdev2/project/items/edit/{$id}/{$slug}");
 }
 
 ?>
@@ -99,6 +106,7 @@ if(isset($_POST['createCategory'])){
             <fieldset>
                 <label for="newCategory">New Category</label>
                 <input type="hidden" id="id" name="id" value="<?= $id ?>">
+                <input type="hidden" id="slug" name="slug" value="<?= $slug ?>">
                 <input id="newCategory" type="text" name="newCategory">
                 <input type="submit" id="createCategory" name="createCategory" value="Add Category">
                 <input type="submit" id="cancelCreateCategory" name="cancelCreateCategory" value="Cancel">
@@ -121,7 +129,7 @@ if(isset($_POST['createCategory'])){
                 <label for="author">Author Name</label>
                 <input id="author" type="text" name="author" value="<?= $item['author'] ?>">
 
-                <img src="../../images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>">
+                <img src="/webdev2/project/images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>">
                 <label for='file'>Image File:</label>
                 <input type='file' name='file' id='file'>
 

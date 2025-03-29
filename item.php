@@ -4,23 +4,20 @@ require('connect.php');
 
 $title = "Item - ";
 
-if(isset($_GET['id'])){
+if(isset($_GET['p'])){
     // If statemet to verify the input form the GET is an int.
-    if(filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)){
         // Sanitizing id data into a number.
-        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+       // $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
         // SQL query
         $query =   "SELECT i.item_id, i.item_name, i.author, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name 
                     FROM items i 
                     JOIN categories c ON c.category_id = i.category_id 
-                    WHERE i.item_id = :id
-                    AND i.slug = :slug";
+                    WHERE i.slug = :slug";
 
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
         // Bind the value of the id coming from the GET and sanitized into the query.
-        $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
 
         // Execution on the DB server.
@@ -29,18 +26,16 @@ if(isset($_GET['id'])){
         // Get the data from the DB after the query was executed.
         $item = $statement->fetch();
 
-        $title .= " {$item['item_name']}";
-
         if (!$item) {
             header("HTTP/1.0 404 Not Found");
             echo "Page not found or URL has been modified";
             exit;
+        }else{
+            $title .= " {$item['item_name']}";
         }
 
     // If the input form the GET is not an int, it is redirected to index.php.
-    }else{
-    header("Location: /webdev2/project/");
-    }
+
 }
 
 ?>

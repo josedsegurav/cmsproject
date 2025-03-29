@@ -10,19 +10,20 @@ RewriteRule ^$ index.php [NC,L]
 # Handle browse items request
 RewriteRule ^browse$ browse.php [NC,L]
 
+# Handle browse categories link request
+RewriteRule ^browse/([0-9]+)/([^/]+)$ browse.php?id=$1&p=$2 [NC,L]
+
 # Handle create items request
 RewriteRule ^add$ create.php [NC,L]
 
 # Handle list page request
 RewriteRule ^items$ list.php [NC,L]
 
-# Handle item display request 
-RewriteRule ^items/([0-9]+)/([^/]+)$ item.php?id=$1&p=$2 [NC,L]
-
-# Handle item edit request (optional slug)
-RewriteRule ^items/edit/([0-9]+)$ edit.php?id=$1 [NC,L]
-RewriteRule ^items/edit/([0-9]+)/([^/]+)$ edit.php?id=$1&p=$2 [NC,L]
-
 # Handle process item request
 RewriteRule ^items/process$ process.php [NC,L]
 
+# Handle item display request 
+RewriteRule ^items/([^/]+)$ item.php?p=$1 [NC,L]
+
+# Handle item edit request (optional slug)
+RewriteRule ^items/edit/([0-9]+)/([^/]+)$ edit.php?id=$1&p=$2 [NC,L]

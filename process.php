@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 // Require database data
 require('connect.php');
 // Require library to resize images
@@ -92,7 +92,7 @@ if ($file_upload_detected) {
 if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     // If statement that checks if the data is coming from the create button from the create.php file.
     if(isset($_POST['create'])){
-        
+
         $img = $file_filename;
 
         move_uploaded_file($temporary_file_path, $new_file_path);
@@ -120,20 +120,18 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
 
         // Execution on the DB server.
         $statement->execute();
-        // Get the data from the DB after the query was executed.
-
-        $row = $statement->fetch();
 
         // Variable session message added with create message.
-        session_start();
+        
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-        header("Location: /webdev2/project/");
+       header("Location: /webdev2/project/browse");
     }
 
     if(isset($_POST['id']) && isset($_POST['update'])){
         // Sanitizing id data into a number.
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $slug = getInputs()['slug'];
 
         move_uploaded_file($temporary_file_path, $new_file_path);
     
@@ -162,20 +160,20 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     
         // Execution on the DB server.
         $statement->execute();
+        $item = $statement->fetch();
         // Variable session message added with update message.
-        session_start();
+
         $_SESSION['message'] = "Item Updated.";
     
         // Then it is redirected to edit.php according to it's id data.
-        header("Location: edit/{$id}");
+       header("Location: /webdev2/project/items/edit/{$id}/{$slug}");
     }
 }
 }else{
 
     if(filterInput()){
         // If statement that checks if the data is coming from the create button from the create.php file.
-    if(isset($_POST['create'])){
-
+    if($_FILES['file']['error'] === 4 && isset($_POST['create'])){
         // SQL query
         $query = "INSERT INTO items (item_name, author, content, category_id, store_url, slug) 
                 VALUES (:name, :author, :content, :category, :link, :slug)";
@@ -192,21 +190,18 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
 
         // Execution on the DB server.
         $statement->execute();
-        // Get the data from the DB after the query was executed.
-        $row = $statement->fetch();
-
         // Variable session message added with create message.
-        session_start();
+        
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-        header("Location: /webdev2/project/");
+        header("Location: /webdev2/project/browse");
     }
 
         // Check if the error is an empty file input, if the id is set and the request comes from edit.php update button.
         if($_FILES['file']['error'] === 4 && isset($_POST['id']) && isset($_POST['update'])){
             // Sanitizing id data into a number.
             $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-        
+            $slug = getInputs()['slug'];
             // SQL query
             $query = "UPDATE items 
                     SET item_name = :name, author = :author, content = :content, category_id = :category, store_url = :link, slug = :slug 
@@ -225,12 +220,12 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
             // Execution on the DB server.
             $statement->execute();
+    
             // Variable session message added with update message.
-            session_start();
             $_SESSION['message'] = "Item Updated.";
         
             // Then it is redirected to edit.php according to it's id data.
-            header("Location: edit/{$id}");
+            header("Location: /webdev2/project/items/edit/{$id}/{$slug}");
         }
     }
 }
@@ -240,6 +235,7 @@ if(isset($_POST['delete']) && isset($_POST['id'])){
 
     // Sanitizing id data into a number.
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $slug = getInputs()['slug'];
 }
 
 // If statement checks if data is coming from the confirm button from the delete confirmation form. 
@@ -259,18 +255,19 @@ $statement->bindValue(':id', $id, PDO::PARAM_INT);
 $statement->execute();
 
 // Variable session message added with delete message.
-session_start();
+
 $_SESSION['message'] = "Item Deleted.";
 
 // Then it is redirected to index.php.
-header("Location: ../");
+header("Location: /webdev2/project/browse");
 
 // // If statement checks if data is coming from the cancel button from the delete confirmation form.
 }elseif (isset($_POST['cancel'])) {
     // Sanitizing id data into a number.
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $slug = filter_input(INPUT_POST, 'slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     // It is redirected to edit.php according to it's id data.
-    header("Location: edit/{$id}");
+    header("Location: /webdev2/project/items/edit/{$id}/{$slug}");
 }
 ?>
 
@@ -290,7 +287,7 @@ header("Location: ../");
     </div>
     <?php endif ?>
     <!-- Error message if there no file is uploaded and the request is not from the delete button -->
-    <?php if(($upload_error_detected && !isset($_POST['delete'])) || ($file_upload_detected && !file_is_an_image($temporary_file_path, $new_file_path) && !isset($_POST['delete']))): ?>
+    <?php if((!filterInput() && $upload_error_detected && !isset($_POST['delete'])) || ($file_upload_detected && !file_is_an_image($temporary_file_path, $new_file_path) && !isset($_POST['delete']))): ?>
     <div>
         <h2>There is an error code: <?= $_FILES['file']['error'] ?> on the entry.</h2>
         <p>Verify that you are uploading an image file.</p>
@@ -304,6 +301,7 @@ header("Location: ../");
             <fieldset>
                 <p>Confirm to delete post.
                     <input type="hidden" id="id" name="id" value="<?= $id ?>">
+                    <input type="hidden" id="slug" name="slug" value="<?= $slug ?>">
                     <input type="submit" id="confirm" name="confirm" value="Ok">
                     <input type="submit" id="cancel" name="cancel" value="Cancel">
                 </p>
