@@ -54,28 +54,12 @@ if(isset($_GET['p'])){
 <body>
     <?php include('nav.php'); ?>
     <?php if(!isset($_GET['p'])): ?>
-    <?php foreach ($items as $row): ?>
-    <div>
-        <div>
-            <h2><a href="items/<?= $row['slug'] ?>"><?= $row['item_name'] ?></a></h2>
-            <span>Created by <?= $row['author'] ?> on
-                <?= date("F d, Y, g:i a", strtotime($row['date_created'])) ?></span>
-        </div>
-        <p>Category: <span><?= $row['category_name'] ?></span></p>
-
-    </div>
+    <?php foreach ($items as $item): ?>
+        <?php include('listItemTemplate.php') ?>
     <?php endforeach ?>
     <?php elseif(isset($_GET['p']) && $browseCategories): ?>
-        <?php foreach ($browseCategories as $browseCategory): ?>
-    <div>
-        <div>
-            <h2><a href="items/<?= $browseCategory['slug'] ?>"><?= $browseCategory['item_name'] ?></a></h2>
-            <span>Created by <?= $browseCategory['author'] ?> on
-                <?= date("F d, Y, g:i a", strtotime($browseCategory['date_created'])) ?></span>
-        </div>
-        <p>Category: <span><?= $browseCategory['category_name'] ?></span></p>
-
-    </div>
+        <?php foreach ($browseCategories as $item): ?>
+            <?php include('listItemTemplate.php') ?>
     <?php endforeach ?>
     <?php elseif(isset($_GET['p']) && !$browseCategories): ?>
         <p>There are no items in that category.</p>

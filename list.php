@@ -299,20 +299,19 @@
     <!-- Display first set of data before any sort or search -->
     <?php if (!generalListDisplay()): ?>
     <?php foreach ($items as $item): ?>
-    <div>
         <!-- Include a template for each item display -->
+        <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
         <?php include 'listItemTemplate.php'; ?>
-    </div>
     <?php endforeach?>
     <?php endif?>
     <!-- Display items by sorting -->
     <?php if (sortDisplay()): ?>
     <h2>Sorted by <?= $sortHeader ?></h2>
     <?php foreach ($sortedList as $item): ?>
-    <div>
+    
         <!-- Include a template for each item display -->
-        <?php include 'listItemTemplate.php'; ?>
-    </div>
+        <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
+        <?php include 'listItemTemplate.php'; ?>    
     <?php endforeach?>
     <?php endif?>
 
@@ -365,6 +364,13 @@
     <p>There are no items with this name.</p>
     <?php endif?>
     <?php endif?>
+    <script>
+    var options = {
+        closeOnScroll: true,
+    };
+
+    new LuminousGallery(document.querySelectorAll(".image a"), options);
+    </script>
 </body>
 
 </html>

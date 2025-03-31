@@ -54,10 +54,16 @@ $navCategories = $navStatement->fetchAll();
             <div class="d-flex gap-3">
                 <div class="d-flex justify-content-center">
                     <form action="/webdev2/project/search" method="post" class="d-flex">
-                        <input id="searchInput" name="searchInput" type="text" class="form-control search-bar me-2" placeholder="Search for items..."
-                            style="max-width: 500px;">
+                        <input id="searchInput" name="searchInput" type="text" class="form-control search-bar me-2"
+                            placeholder="Search for items..." style="max-width: 500px;">
+                        <select class="form-select search-bar me-2" id="category" name="category">
+                            <option value="default" selected>All Categories</option>
+                            <?php foreach ($navCategories as $category): ?>
+                            <option value="<?= $category['category_id']?>"><?= $category['category_name']?></option>
+                            <?php endforeach?>
+                        </select>
                         <button class="btn btn-warning"><i class="fas fa-search"></i></button>
-                        <form>
+                    </form>
                 </div>
                 <div class="d-flex">
                     <a href="#" class="btn btn-outline-primary me-2">Log In</a>

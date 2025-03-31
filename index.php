@@ -101,63 +101,6 @@ if(!empty($_SESSION['message'])){
         </div>
     </section>
 
-    <!-- Featured Items Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="section-title mb-0">Featured Items</h2>
-                <a href="#" class="btn btn-outline-primary">View All</a>
-            </div>
-            <div class="row">
-                <div class="col-md-6 col-lg-4">
-                    <div class="card">
-                        <span class="featured-badge">Featured</span>
-                        <img src="/api/placeholder/600/400" class="card-img-top" alt="Modern Sofa">
-                        <div class="card-body">
-                            <span class="category-pill">Furniture</span>
-                            <h5 class="card-title">Scandinavian Minimalist Sofa</h5>
-                            <p class="card-text">Sleek, modern sofa with clean lines and comfort.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
-                                <small class="text-muted">12 comments</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card">
-                        <span class="featured-badge">Featured</span>
-                        <img src="/api/placeholder/600/400" class="card-img-top" alt="Pendant Light">
-                        <div class="card-body">
-                            <span class="category-pill">Lighting</span>
-                            <h5 class="card-title">Geometric Pendant Light</h5>
-                            <p class="card-text">Eye-catching pendant light with geometric design.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
-                                <small class="text-muted">8 comments</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card">
-                        <span class="featured-badge">Featured</span>
-                        <img src="/api/placeholder/600/400" class="card-img-top" alt="Wall Decor">
-                        <div class="card-body">
-                            <span class="category-pill">Decor</span>
-                            <h5 class="card-title">Abstract Wall Art Set</h5>
-                            <p class="card-text">Colorful abstract art pieces to elevate any space.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
-                                <small class="text-muted">15 comments</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Recent Items Section -->
     <section class="py-5">
         <div class="container">
