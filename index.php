@@ -111,7 +111,7 @@ if(!empty($_SESSION['message'])){
             <div class="row">
                 <div class="col-md-6 col-lg-3">
                     <div class="card">
-                        <img src="/api/placeholder/600/400" class="card-img-top" alt="Armchair">
+                        <img src="" class="card-img-top" alt="Armchair">
                         <div class="card-body">
                             <span class="category-pill">Furniture</span>
                             <h5 class="card-title">Velvet Armchair</h5>
@@ -125,7 +125,7 @@ if(!empty($_SESSION['message'])){
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="card">
-                        <img src="/api/placeholder/600/400" class="card-img-top" alt="Table Lamp">
+                        <img src="" class="card-img-top" alt="Table Lamp">
                         <div class="card-body">
                             <span class="category-pill">Lighting</span>
                             <h5 class="card-title">Brass Table Lamp</h5>
@@ -139,7 +139,7 @@ if(!empty($_SESSION['message'])){
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="card">
-                        <img src="/api/placeholder/600/400" class="card-img-top" alt="Throw Pillows">
+                        <img src="" class="card-img-top" alt="Throw Pillows">
                         <div class="card-body">
                             <span class="category-pill">Textiles</span>
                             <h5 class="card-title">Boho Throw Pillows</h5>
@@ -153,7 +153,7 @@ if(!empty($_SESSION['message'])){
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="card">
-                        <img src="/api/placeholder/600/400" class="card-img-top" alt="Bookshelf">
+                        <img src="" class="card-img-top" alt="Bookshelf">
                         <div class="card-body">
                             <span class="category-pill">Storage</span>
                             <h5 class="card-title">Modular Bookshelf</h5>
@@ -210,7 +210,7 @@ if(!empty($_SESSION['message'])){
                     <a href="#" class="btn btn-primary">Upload Your Item</a>
                 </div>
                 <div class="col-lg-6">
-                    <img src="/api/placeholder/600/400" alt="Submit Item" class="img-fluid rounded shadow">
+                    <img src="" alt="Submit Item" class="img-fluid rounded shadow">
                 </div>
             </div>
         </div>
@@ -248,14 +248,6 @@ if(!empty($_SESSION['message'])){
                         <li class="mb-2"><a href="#" class="text-white-50">Textiles</a></li>
                         <li class="mb-2"><a href="#" class="text-white-50">Storage</a></li>
                     </ul>
-                </div>
-                <div class="col-md-4 col-lg-4">
-                    <h5 class="text-white mb-4">Stay Updated</h5>
-                    <p class="text-white-50">Subscribe to our newsletter for the latest design trends and new items.</p>
-                    <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Your email">
-                        <button class="btn btn-warning" type="button">Subscribe</button>
-                    </div>
                 </div>
             </div>
             <hr class="mt-4 mb-4 bg-light">

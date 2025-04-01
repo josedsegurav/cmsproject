@@ -66,7 +66,7 @@ function file_upload_path($original_filename, $upload_subfolder_name = 'images')
     
  // file_is_an_image() - Checks the mime-type & extension of the uploaded file for "image-ness".
  function file_is_an_image($temporary_path, $new_path) {
-    $allowed_mime_types      = ['image/gif', 'image/jpeg', 'image/png'];
+    $allowed_mime_types      = ['image/gif', 'image/jpg', 'image/jpeg', 'image/png'];
     $allowed_file_extensions = ['gif', 'jpg', 'jpeg', 'png'];
     
     $actual_file_extension   = pathinfo($new_path, PATHINFO_EXTENSION);

@@ -48,7 +48,7 @@ $navCategories = $navStatement->fetchAll();
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Submit Item</a>
+                    <a class="nav-link" href="/webdev2/project/items">Items List</a>
                 </li>
             </ul>
             <div class="d-flex gap-3">

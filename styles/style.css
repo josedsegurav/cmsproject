@@ -5,13 +5,13 @@
 .lum-gallery-button {
     display: none;
 }
-/* 
+ 
 :root {
     --primary-color: #2c3e50;
     --secondary-color: #ecf0f1;
     --accent-color: #e67e22;
 }
-
+/*
 body {
     font-family: 'Poppins', sans-serif;
     color: #333;
@@ -24,7 +24,7 @@ body {
 }
 
 .hero-section {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/api/placeholder/1200/600');
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('');
     background-size: cover;
     background-position: center;
     color: white;
@@ -95,7 +95,7 @@ body {
     width: 50px;
     height: 3px;
     background-color: var(--accent-color);
-}
+/* } */
 
 footer {
     background-color: var(--primary-color);
@@ -103,7 +103,7 @@ footer {
     padding: 2.5rem 0;
 }
 
-.category-icon {
+/* .category-icon {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     color: var(--accent-color);
