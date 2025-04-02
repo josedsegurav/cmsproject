@@ -9,12 +9,12 @@
     //      print "Error: " . $e->getMessage();
     //      die();
     //  }
-    $url = getenv('JAWSDB_MARIA_URL');
+    $url = getenv('mysql://zoapdlyutui4hvsi:rrny49vc3cbjia2g@ui0tj7jn8pyv9lp6.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/m4e70yz4l1bqa3ks');
     $dbparts = parse_url($url);
 
-    $hostname = $dbparts['ui0tj7jn8pyv9lp6.cbetxkdyhwsb.us-east-1.rds.amazonaws.com'];
-    $username = $dbparts['zoapdlyutui4hvsi'];
-    $password = $dbparts['rrny49vc3cbjia2g'];
+    $hostname = $dbparts['host'];
+    $username = $dbparts['user'];
+    $password = $dbparts['pass'];
     $database = ltrim($dbparts['path'],'/');
 
     try {
