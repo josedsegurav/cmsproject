@@ -2,7 +2,7 @@
 RewriteEngine On
 
 # Set the base directory to match your project path
-RewriteBase /
+RewriteBase https://cmsproject-5ed0945ea792.herokuapp.com/
 
 # Handle index page
 RewriteRule ^$ index.php [NC,L]
