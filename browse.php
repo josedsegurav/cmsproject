@@ -9,7 +9,8 @@ $title = "Browse Items";
 $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
         FROM items i 
         JOIN categories c ON c.category_id = i.category_id
-        JOIN users u ON i.user_id = u.user_id";
+        JOIN users u ON i.user_id = u.user_id
+        ORDER BY i.date_created DESC";
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($query);
 // Execution on the DB server.

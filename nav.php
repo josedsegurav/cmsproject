@@ -1,17 +1,21 @@
 <?php
 
-$userLogged = false;
+$logged = false;
 $adminUser = false;
-$user= false;
+$userLogged= false;
 
 
 if(isset($_SESSION['user'])){
-    $userLogged = true;
+    $logged = true;
     if($_SESSION['user']['role'] === "admin"){
         $adminUser = true;
     }elseif($_SESSION['user']['role'] === "user"){
-        $user = true;
+        $userLogged = true;
     }
+}
+
+if(!empty($_SESSION['user'])){
+    $user = $_SESSION['user'];
 }
 
 // SQL query
@@ -84,10 +88,10 @@ if(isset($_POST['logOut'])){
                         <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i></button>
                     </form>
                 </div>
-                <?php if($userLogged): ?>
+                <?php if($logged): ?>
                 <div class="d-flex align-items-center gap-2">
                     <p class="mb-0">Hi, <?= $_SESSION['user']['name'] ?>!</p>
-                    <a href="/webdev2/project/list.php" class="btn btn-primary">Dashboard</a>
+                    <a href="/webdev2/project/dashboard" class="btn btn-primary">Dashboard</a>
                     <form method="post" class="mb-0">
                         <input type="submit" id="logOut" name="logOut" class="btn btn-primary" value="Log Out">
                     </form>

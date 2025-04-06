@@ -5,11 +5,7 @@ require 'authenticate.php';
 // Require database data
 require('connect.php');
 // If statement to verify a Session variable 'message' has a value, and send the content in a alert script.
-if(!empty($_SESSION['message'])){
-    $message = $_SESSION['message'];
-    echo "<script>alert('{$message}')</script>";
-    unset($_SESSION['message']);
-}
+
 // Variable to add a name to the title in the html head tag
 $title = "Update Item.";
 
@@ -113,21 +109,24 @@ if(isset($_POST['createCategory'])){
                             <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
                                 <input type="hidden" id="id" name="id" value="<?= $item['item_id'] ?>">
                                 <input type="hidden" id="userId" name="userId" value="<?= $item['user_id'] ?>">
-                                
+
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Item Name</label>
-                                    <input id="name" type="text" name="name" value="<?= $item['item_name'] ?>" class="form-control" required>
+                                    <input id="name" type="text" name="name" value="<?= $item['item_name'] ?>"
+                                        class="form-control" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <img src="/webdev2/project/images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>" class="img-thumbnail mb-2">
+                                    <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
+                                        alt="<?= $item['image'] ?>" class="img-thumbnail mb-2">
                                     <label for="file" class="form-label">Image File</label>
                                     <input type="file" name="file" id="file" class="form-control">
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="content" class="form-label">Content</label>
-                                    <textarea id="content" name="content" rows="10" class="form-control" required><?= $item['content'] ?></textarea>
+                                    <textarea id="content" name="content" rows="10" class="form-control"
+                                        required><?= $item['content'] ?></textarea>
                                 </div>
 
                                 <div class="mb-3">
@@ -147,7 +146,8 @@ if(isset($_POST['createCategory'])){
 
                                 <div class="mb-3">
                                     <label for="link" class="form-label">Link to buy it</label>
-                                    <input id="link" type="text" name="link" value="<?= $item['store_url'] ?>" class="form-control" required>
+                                    <input id="link" type="text" name="link" value="<?= $item['store_url'] ?>"
+                                        class="form-control" required>
                                 </div>
 
                                 <div class="mb-4">
@@ -159,10 +159,12 @@ if(isset($_POST['createCategory'])){
 
                                         <div class="input-group">
                                             <div class="input-group-text">
-                                                <input name="slugCheck" id="slugCheck" type="checkbox" class="form-check-input me-2">
+                                                <input name="slugCheck" id="slugCheck" type="checkbox"
+                                                    class="form-check-input me-2" checked>
                                                 <label for="slugCheck" class="form-check-label">Permalink</label>
                                             </div>
-                                            <input name="slug" id="slug" type="text" class="form-control" value="<?= $item['slug'] ?>">
+                                            <input name="slug" id="slug" type="text" class="form-control"
+                                                value="<?= $item['slug'] ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -171,9 +173,31 @@ if(isset($_POST['createCategory'])){
                                     <button type="submit" id="submit" name="update" class="btn btn-primary">
                                         <i class="fas fa-save me-2"></i>Update Item
                                     </button>
-                                    <button type="submit" id="delete" name="delete" class="btn btn-danger">
+                                    <button type="button" id="delete" data-toggle="modal" data-target="#deleteModal"
+                                        class="btn btn-danger">
                                         <i class="fas fa-trash-alt me-2"></i>Delete Item
                                     </button>
+                                </div>
+                                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                                    aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete this item? This action cannot be
+                                                    undone.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Cancel</button>
+                                                <input type="submit" class="btn btn-danger" name="confirm" value="Delete">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                         </main>
@@ -182,6 +206,18 @@ if(isset($_POST['createCategory'])){
             </div>
         </div>
     </div>
+    <form method="post">
+        <fieldset>
+            <p>Confirm to delete post.
+                <input type="hidden" id="id" name="id" value="<?= $id ?>">
+                <input type="hidden" id="slug" name="slug" value="<?= $slug ?>">
+                <input type="submit" id="confirm" name="confirm" value="Ok">
+                <input type="submit" id="cancel" name="cancel" value="Cancel">
+            </p>
+        </fieldset>
+    </form>
+    </div>
+
     <!-- Footer -->
     <?php include('footer.php'); ?>
     <!-- Script to add the WYSIWYG editor. -->
@@ -195,6 +231,7 @@ if(isset($_POST['createCategory'])){
         });
     });
     </script>
+
 </body>
 
 </html>

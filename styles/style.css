@@ -20,6 +20,10 @@ body {
     background-color: #f8f9fa;
 }
 
+#dashboardHeader {
+    background-color: var(--primary-color);
+}
+
 .navbar-brand {
     font-weight: 700;
     letter-spacing: 1px;

@@ -15,7 +15,7 @@ function filterInput() {
         $_POST && 
         !empty($_POST['name']) && 
         !empty($_POST['content']) &&
-        (isset($_POST['category']) || !empty($_POST['newCategory'])) &&
+        (isset($_POST['category'])) &&
         !empty($_POST['link']) &&
         !(trim($_POST['name']) == '') &&
         !(trim($_POST['link']) == '') && 
@@ -99,7 +99,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     // If statement that checks if the data is coming from the create button from the create.php file.
     if(isset($_POST['create'])){
 
-        $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
+        $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
 
         $img = $file_filename;
 
@@ -133,15 +133,13 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-       header("Location: /webdev2/project/browse");
+       header("Location: /webdev2/project/dashboard/items");
     }
 
     if(isset($_POST['id']) && isset($_POST['update'])){
         // Sanitizing id data into a number.
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-        $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
-        
-        $slug = getInputs()['slug'];
+        $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
 
         move_uploaded_file($temporary_file_path, $new_file_path);
     
@@ -176,7 +174,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $_SESSION['message'] = "Item Updated.";
     
         // Then it is redirected to edit.php according to it's id data.
-       header("Location: /webdev2/project/items/edit/{$id}/{$slug}");
+       header("Location: /webdev2/project/dashboard/items");
     }
 }
 }else{
@@ -184,7 +182,10 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     if(filterInput()){
         // If statement that checks if the data is coming from the create button from the create.php file.
     if($_FILES['file']['error'] === 4 && isset($_POST['create'])){
-        $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
+        $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
+        echo($_POST['userId']);
+        echo($_POST['name']);
+        echo($user_id);
         // SQL query
         $query = "INSERT INTO items (item_name, user_id, content, category_id, store_url, slug) 
                 VALUES (:name, :user_id, :content, :category, :link, :slug)";
@@ -205,19 +206,20 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-        header("Location: /webdev2/project/browse");
+        header("Location: /webdev2/project/dashboard/items");
     }
 
         // Check if the error is an empty file input, if the id is set and the request comes from edit.php update button.
         if($_FILES['file']['error'] === 4 && isset($_POST['id']) && isset($_POST['update'])){
             // Sanitizing id data into a number.
             $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-            $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
-            $slug = getInputs()['slug'];
+            $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
+            print_r(getInputs());
+            
             // SQL query
             $query = "UPDATE items 
-                    SET item_name = :name, user_id = :user_id, content = :content, category_id = :category, store_url = :link, slug = :slug 
-                    WHERE item_id = :id";
+                    SET item_name = :name, content = :content, category_id = :category, store_url = :link, slug = :slug 
+                    WHERE item_id = :id AND user_id = :user_id";
         
             // A PDO::Statement is prepared from the query. 
             $statement = $db->prepare($query);
@@ -237,31 +239,26 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
             $_SESSION['message'] = "Item Updated.";
         
             // Then it is redirected to edit.php according to it's id data.
-            header("Location: /webdev2/project/items/edit/{$id}/{$slug}");
+            header("Location: /webdev2/project/dashboard/items");
         }
     }
-}
-
-// Verify if the request comes from edit.php delete button and if the id is set.
-if(isset($_POST['delete']) && isset($_POST['id'])){
-
-    // Sanitizing id data into a number.
-    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $slug = getInputs()['slug'];
 }
 
 // If statement checks if data is coming from the confirm button from the delete confirmation form. 
 if(isset($_POST['confirm'])){
     // Sanitizing id data into a number.
 $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+$user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
 
 // SQL query
-$query = "DELETE FROM items WHERE item_id = :id";
+$query = "DELETE FROM items WHERE item_id = :id AND user_id = :user_id";
 
 // A PDO::Statement is prepared from the query.
 $statement = $db->prepare($query);
 // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is an int
 $statement->bindValue(':id', $id, PDO::PARAM_INT);
+$statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+
 
 // Execution on the DB server.
 $statement->execute();
@@ -271,7 +268,7 @@ $statement->execute();
 $_SESSION['message'] = "Item Deleted.";
 
 // Then it is redirected to index.php.
-header("Location: /webdev2/project/browse");
+header("Location: /webdev2/project/dashboard/items");
 
 // // If statement checks if data is coming from the cancel button from the delete confirmation form.
 }elseif (isset($_POST['cancel'])) {
@@ -303,22 +300,6 @@ header("Location: /webdev2/project/browse");
     <div>
         <h2>There is an error code: <?= $_FILES['file']['error'] ?> on the entry.</h2>
         <p>Verify that you are uploading an image file.</p>
-    </div>
-    <?php endif ?>
-    <!-- Display a confirm form if there is no file bieng uploaded and the data is coming from the delete button on edit.php -->
-    <?php if($_FILES['file']['error'] === 4 && isset($_POST['delete'])): ?>
-    <div>
-        <!-- Delete confirmation form -->
-        <form method="post">
-            <fieldset>
-                <p>Confirm to delete post.
-                    <input type="hidden" id="id" name="id" value="<?= $id ?>">
-                    <input type="hidden" id="slug" name="slug" value="<?= $slug ?>">
-                    <input type="submit" id="confirm" name="confirm" value="Ok">
-                    <input type="submit" id="cancel" name="cancel" value="Cancel">
-                </p>
-            </fieldset>
-        </form>
     </div>
     <?php endif ?>
 </body>

@@ -1,15 +1,16 @@
 <?php
 session_start();
 
-$user = $_SESSION['user'];
+if(!empty($_SESSION['user'])){
+    $user = $_SESSION['user'];
+}
+
 // Require authentication script to protect data manipulation from unauthorized users
  require 'authenticate.php';
  // Require database data
  require('connect.php');
 // Variable to add a name to the title in the html head tag
 $title = "Add Item";
-
-echo($user['user_id']);
 
 // SQL query
 $query = "SELECT * FROM categories";
@@ -19,17 +20,14 @@ $statement = $db->prepare($query);
 $statement->execute();
 $categories = $statement->fetchAll();
 
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <!-- Include head tag from template -->
 <?php include('htmlHead.php'); ?>
-
 <body>
     <!-- Include nav tag from template -->
     <?php include('nav.php'); ?>
-
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -40,7 +38,7 @@ $categories = $statement->fetchAll();
                         <main>
                             <!-- Form sending the data to process.php -->
                             <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
-                                <input type="hidden" id="user_id" name="user_id" value="<?= $user['user_id'] ?>">
+                                <input type="hidden" id="userId" name="userId" value="<?= $user['user_id'] ?>">
 
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Item Name</label>

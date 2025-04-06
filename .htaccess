@@ -10,6 +10,15 @@ RewriteRule ^$ index.php [NC,L]
 # Handle browse items request
 RewriteRule ^browse$ browse.php [NC,L]
 
+# Handle dashboard request
+RewriteRule ^dashboard$ dashboard.php [NC,L]
+
+# Handle dashboard category process request
+RewriteRule ^categoryprocess$ processcategory.php [NC,L]
+
+# Handle dashboard tab manage request
+RewriteRule ^dashboard/([^/]+)$ dashboard.php?manage=$1 [NC,L]
+
 # Handle browse categories link request
 RewriteRule ^browse/([^/]+)$ browse.php?p=$1 [NC,L]
 
