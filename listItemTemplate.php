@@ -25,7 +25,7 @@
                     style="color: #2c3e50;"><?= $item['item_name'] ?></a>
             </h5>
             <p class="card-text text-muted small">
-                Created by <?= $item['author'] ?> on
+                Created by <?= $item['name'] ?>  <?= $item['lastname'] ?> on
                 <?= date("F d, Y, g:i a", strtotime($item['date_created'])) ?>
             </p>
             <div class="d-flex justify-content-between align-items-center mt-3">

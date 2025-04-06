@@ -1,4 +1,5 @@
 <?php
+    session_start();
     // Require authentication script to protect data manipulation from unauthorized users
     require 'authenticate.php';
     // Require database data
@@ -14,9 +15,10 @@
     $categories = $categoryStatement->fetchAll();
 
     // SQL query to display first set of information being order by date created Asc
-    $general_query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
+    $general_query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
         FROM items i
         JOIN categories c ON c.category_id = i.category_id
+        JOIN users u ON i.user_id = u.user_id
         ORDER BY i.date_created";
     // A PDO::Statement is prepared from the query.
     $general_statement = $db->prepare($general_query);
@@ -32,9 +34,7 @@
         !isset($_POST['sortByDateAsc']) && 
         !isset($_POST['sortByNameDesc']) && 
         !isset($_POST['sortByAuthorDesc']) && 
-        !isset($_POST['sortByDateDesc']) && 
-        !isset($_POST['sortByCategoryDesc']) && 
-        !isset($_POST['sortByCategoryAsc'])){
+        !isset($_POST['sortByDateDesc'])){
             return false;
         }else{
             return true;
@@ -48,9 +48,7 @@
         isset($_POST['sortByAuthorDesc']) || 
         isset($_POST['sortByAuthorAsc']) || 
         isset($_POST['sortByDateDesc']) || 
-        isset($_POST['sortByDateAsc']) || 
-        isset($_POST['sortByCategoryDesc']) || 
-        isset($_POST['sortByCategoryAsc'])) {
+        isset($_POST['sortByDateAsc'])) {
             return true;
         }else{
             return false;
@@ -58,9 +56,10 @@
     }
 
     // Variable as a main query template
-    $mainQuery = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
+    $mainQuery = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
     FROM items i
-    JOIN categories c ON c.category_id = i.category_id";
+    JOIN categories c ON c.category_id = i.category_id
+    JOIN users u ON i.user_id = u.user_id";
 
     // Sorting by Item Name in Descending order
     if(isset($_POST['sortByNameDesc'])) {
@@ -95,7 +94,7 @@
 
         $sortHeader = "Author Name in Descending Order";
         
-        $sortQuery = $mainQuery . " ORDER BY i.author DESC";
+        $sortQuery = $mainQuery . " ORDER BY u.lastname DESC";
         // A PDO::Statement is prepared from the query.
         $sortStatement = $db->prepare($sortQuery);
 
@@ -109,7 +108,7 @@
 
         $sortHeader = "Item Name in Ascending Order";
         
-        $sortQuery = $mainQuery . " ORDER BY i.author";
+        $sortQuery = $mainQuery . " ORDER BY i.lastname";
         // A PDO::Statement is prepared from the query.
         $sortStatement = $db->prepare($sortQuery);
 
@@ -146,34 +145,6 @@
         $sortedList = $sortStatement->fetchAll();
     }
 
-    // Sorting by Category in Descending order
-    if(isset($_POST['sortByCategoryDesc'])) {
-
-        $sortHeader = "Category in Descending Order";
-        
-        $sortQuery = $mainQuery . " ORDER BY c.category_name DESC";
-        // A PDO::Statement is prepared from the query.
-        $sortStatement = $db->prepare($sortQuery);
-
-    // Execution on the DB server.
-        $sortStatement->execute();
-        $sortedList = $sortStatement->fetchAll();
-    }
-
-    // Sorting by Category in Ascending order
-    if(isset($_POST['sortByCategoryAsc'])) {
-
-        $sortHeader = "Category in Ascending Order";
-        
-        $sortQuery = $mainQuery . " ORDER BY c.category_name";
-        // A PDO::Statement is prepared from the query.
-        $sortStatement = $db->prepare($sortQuery);
-
-    // Execution on the DB server.
-        $sortStatement->execute();
-        $sortedList = $sortStatement->fetchAll();
-    }
-    
     // Search functionality
     if (isset($_POST['search'])) {
 
@@ -190,9 +161,10 @@
         if (filterInput($_POST['name'])) {
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-            $query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name
+            $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
         FROM items i
         JOIN categories c ON c.category_id = i.category_id
+        JOIN users u ON i.user_id = u.user_id
         WHERE i.item_name LIKE :name
         ORDER BY i.date_created DESC";
     // A PDO::Statement is prepared from the query.
@@ -264,13 +236,10 @@
         <label>Item Name</label>
         <input type="submit" id="nameAsc" name="sortByNameAsc" value="⬆ a-z">
         <input type="submit" id="nameDesc" name="sortByNameDesc" value="⬇ z-a">
+
         <label>Author Name</label>
         <input type="submit" id="authorAsc" name="sortByAuthorAsc" value="⬆ a-z">
         <input type="submit" id="authorDesc" name="sortByAuthorDesc" value="⬇ z-a">
-
-        <label>Category</label>
-        <input type="submit" id="categoryAsc" name="sortByCategoryAsc" value="⬆ a-z">
-        <input type="submit" id="categoryDesc" name="sortByCategoryDesc" value="⬇ z-a">
 
         <label>Date Created</label>
         <input type="submit" id="dateAsc" name="sortByDateAsc" value="⬆">
@@ -299,24 +268,24 @@
     <!-- Display first set of data before any sort or search -->
     <?php if (!generalListDisplay()): ?>
     <?php foreach ($items as $item): ?>
-        <!-- Include a template for each item display -->
-        <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
-        <?php include 'listItemTemplate.php'; ?>
+    <!-- Include a template for each item display -->
+    <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
+    <?php include 'listItemTemplate.php'; ?>
     <?php endforeach?>
     <?php endif?>
     <!-- Display items by sorting -->
     <?php if (sortDisplay()): ?>
     <h2>Sorted by <?= $sortHeader ?></h2>
     <?php foreach ($sortedList as $item): ?>
-    
-        <!-- Include a template for each item display -->
-        <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
-        <?php include 'listItemTemplate.php'; ?>    
+
+    <!-- Include a template for each item display -->
+    <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
+    <?php include 'listItemTemplate.php'; ?>
     <?php endforeach?>
     <?php endif?>
 
     <!-- Error displayed when no search inputs are filled when submitting the search form -->
-    <?php if (isset($_POST['search']) && !filterInput($_POST['name']) && !filterInput($_POST['author']) && !isset($_POST['category'])): ?>
+    <?php if (isset($_POST['search']) && !filterInput($_POST['name']) && !filterInput($_POST['name']) && !isset($_POST['category'])): ?>
     <p>You have to fill one field to search.</p>
     <?php endif?>
 
@@ -364,6 +333,8 @@
     <p>There are no items with this name.</p>
     <?php endif?>
     <?php endif?>
+    <!-- Footer -->
+    <?php include('footer.php'); ?>
     <script>
     var options = {
         closeOnScroll: true,

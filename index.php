@@ -3,11 +3,28 @@ session_start();
 
 require('connect.php');
 
+$loginSuccess = false;
+$logOutSuccess = false;
+
+if(isset($_SESSION['loggedMessage'])){
+    $loggedIn = $_SESSION['loggedMessage'];
+    $loginSuccess = true;
+    unset($_SESSION['loggedMessage']);
+}
+
+if(isset($_SESSION['loggedOutMessage'])){
+    $loggedOut = $_SESSION['loggedOutMessage'];
+    $logOutSuccess = true;
+    unset($_SESSION['loggedOutMessage']);
+}
+
 $title = "Discover Trendy Design Pieces";
 
 // SQL query
-$query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name 
-        FROM items i JOIN categories c ON c.category_id = i.category_id";
+$query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname 
+        FROM items i 
+        JOIN categories c ON c.category_id = i.category_id
+        JOIN users u ON i.user_id = u.user_id";
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($query);
 // Execution on the DB server.
@@ -15,11 +32,7 @@ $statement->execute();
 
 $items = $statement->fetchAll();
 
-if(!empty($_SESSION['message'])){
-    $message = $_SESSION['message'];
-    echo "<script>alert('{$message}')</script>";
-    unset($_SESSION['message']);
-}
+
 
 ?>
 
@@ -217,51 +230,39 @@ if(!empty($_SESSION['message'])){
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h4 class="text-white">Interior<span class="text-warning">Items</span></h4>
-                    <p>A collaborative space to discover and share beautiful interior design items for your projects.</p>
-                    <div class="social-icons">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-pinterest-p"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
-                    <h5 class="text-white mb-4">Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white-50">Home</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50">Browse Items</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50">Categories</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50">Submit Item</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
-                    <h5 class="text-white mb-4">Categories</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white-50">Furniture</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50">Lighting</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50">Decor</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50">Textiles</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50">Storage</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="mt-4 mb-4 bg-light">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 text-white-50">&copy; 2025 Interior Items. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="#" class="text-white-50 me-3">Privacy Policy</a>
-                    <a href="#" class="text-white-50 me-3">Terms of Service</a>
-                    <a href="#" class="text-white-50">Contact Us</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include('footer.php'); ?>   
+    <?php if($loginSuccess || $logOutSuccess): ?>
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="successToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-white text-dark border-bottom border-warning">
+      <strong class="me-auto">
+        <i class="fas fa-check-circle me-2 text-warning"></i>
+        <span>Interior<span class="text-warning">Items</span></span>
+      </strong>
+      <small class="text-muted">just now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body bg-white">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-user-check text-primary me-2"></i>
+        <?php if($loginSuccess): ?>
+        <?= $loggedIn ?>
+        <?php elseif($logOutSuccess): ?>
+            <?= $loggedOut ?>
+            <?php endif ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var successToast = new bootstrap.Toast(document.getElementById('successToast'), {
+      delay: 5000
+    });
+    successToast.show();
+  });
+</script>
+<?php endif ?>
 </body>
 </html>

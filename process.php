@@ -14,12 +14,10 @@ function filterInput() {
     if (
         $_POST && 
         !empty($_POST['name']) && 
-        !empty($_POST['author']) &&
         !empty($_POST['content']) &&
         (isset($_POST['category']) || !empty($_POST['newCategory'])) &&
         !empty($_POST['link']) &&
         !(trim($_POST['name']) == '') &&
-        !(trim($_POST['author']) == '') &&
         !(trim($_POST['link']) == '') && 
         !(trim($_POST['content']) == '')
         ){
@@ -30,23 +28,31 @@ function filterInput() {
 }
 
 function getInputs(){
-if(filterInput()){    
+if(filterInput()){
     // Filter html tags from the WYSIWYG editor. 
     $itemContent = $_POST['content'];
     $content = strip_tags($itemContent);
 
     // Replacing spaces for dashes from name input to use it as a slug.
-    $slug = str_replace(" ", "-", $_POST['name']);
-
+    $nameSlug = str_replace(" ", "-", $_POST['name']);
+    $defaultSlug = filter_var($nameSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $userSlug = "";
+    
     // Sanitize special characters from the data and storing it into an array.
     $inputs = [
-            'name' => filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'author' => filter_input(INPUT_POST, 'author', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'content' => filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'category' => filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT),
-            'link' => filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'slug' => filter_var($slug, FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-    ];
+    'name' => filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+    'content' => filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+    'category' => filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT),
+    'link' => filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+    
+];
+    if(isset($_POST['slugCheck']) && !empty($_POST['slug']) && !(trim($_POST['slug']) == '')){
+        $inputSlug = str_replace(" ", "-", $_POST['slug']);
+        $userSlug = filter_var($inputSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $inputs['slug'] = $userSlug;
+    }else{
+        $inputs['slug'] = $defaultSlug;
+    }
 
     return $inputs;
 }
@@ -93,6 +99,8 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     // If statement that checks if the data is coming from the create button from the create.php file.
     if(isset($_POST['create'])){
 
+        $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
+
         $img = $file_filename;
 
         move_uploaded_file($temporary_file_path, $new_file_path);
@@ -104,14 +112,14 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $medium_image->save($path_info['dirname'] . DIRECTORY_SEPARATOR . "medium_" . $path_info['filename'] . "." . $path_info['extension']);
 
         // SQL query
-        $query = "INSERT INTO items (item_name, author, content, category_id, store_url, image, slug) 
-                VALUES (:name, :author, :content, :category, :link, :img, :slug)";
+        $query = "INSERT INTO items (item_name, user_id, content, category_id, store_url, image, slug) 
+                VALUES (:name, :user_id, :content, :category, :link, :img, :slug)";
 
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
         // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
         $statement->bindValue(':name', getInputs()['name'], PDO::PARAM_STR);
-        $statement->bindValue(':author', getInputs()['author'], PDO::PARAM_STR);
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $statement->bindValue(':content', strip_tags(getInputs()['content']), PDO::PARAM_STR);
         $statement->bindValue(':category', getInputs()['category'], PDO::PARAM_INT);
         $statement->bindValue(':link', getInputs()['link'], PDO::PARAM_STR);
@@ -131,6 +139,8 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     if(isset($_POST['id']) && isset($_POST['update'])){
         // Sanitizing id data into a number.
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
+        
         $slug = getInputs()['slug'];
 
         move_uploaded_file($temporary_file_path, $new_file_path);
@@ -143,7 +153,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
 
         // SQL query
         $query = "UPDATE items 
-                SET item_name = :name, author = :author, content = :content, category_id = :category, store_url = :link, image = :img, slug = :slug 
+                SET item_name = :name, user_id = :user_id, content = :content, category_id = :category, store_url = :link, image = :img, slug = :slug 
                 WHERE item_id = :id";
     
         // A PDO::Statement is prepared from the query. 
@@ -151,7 +161,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is an int
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->bindValue(':name', getInputs()['name'], PDO::PARAM_STR);
-        $statement->bindValue(':author', getInputs()['author'], PDO::PARAM_STR);
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $statement->bindValue(':content', strip_tags(getInputs()['content']), PDO::PARAM_STR);
         $statement->bindValue(':category', getInputs()['category'], PDO::PARAM_INT);
         $statement->bindValue(':link', getInputs()['link'], PDO::PARAM_STR);
@@ -174,15 +184,16 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     if(filterInput()){
         // If statement that checks if the data is coming from the create button from the create.php file.
     if($_FILES['file']['error'] === 4 && isset($_POST['create'])){
+        $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
         // SQL query
-        $query = "INSERT INTO items (item_name, author, content, category_id, store_url, slug) 
-                VALUES (:name, :author, :content, :category, :link, :slug)";
+        $query = "INSERT INTO items (item_name, user_id, content, category_id, store_url, slug) 
+                VALUES (:name, :user_id, :content, :category, :link, :slug)";
 
         // A PDO::Statement is prepared from the query. 
         $statement = $db->prepare($query);
         // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is a string.
         $statement->bindValue(':name', getInputs()['name'], PDO::PARAM_STR);
-        $statement->bindValue(':author', getInputs()['author'], PDO::PARAM_STR);
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $statement->bindValue(':content', strip_tags(getInputs()['content']), PDO::PARAM_STR);
         $statement->bindValue(':category', getInputs()['category'], PDO::PARAM_INT);
         $statement->bindValue(':link', getInputs()['link'], PDO::PARAM_STR);
@@ -201,10 +212,11 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         if($_FILES['file']['error'] === 4 && isset($_POST['id']) && isset($_POST['update'])){
             // Sanitizing id data into a number.
             $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+            $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
             $slug = getInputs()['slug'];
             // SQL query
             $query = "UPDATE items 
-                    SET item_name = :name, author = :author, content = :content, category_id = :category, store_url = :link, slug = :slug 
+                    SET item_name = :name, user_id = :user_id, content = :content, category_id = :category, store_url = :link, slug = :slug 
                     WHERE item_id = :id";
         
             // A PDO::Statement is prepared from the query. 
@@ -212,7 +224,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
             // Bind the value of the id coming from the GET and sanitized into the query. A PDO constant to verify the data is an int
             $statement->bindValue(':id', $id, PDO::PARAM_INT);
             $statement->bindValue(':name', getInputs()['name'], PDO::PARAM_STR);
-            $statement->bindValue(':author', getInputs()['author'], PDO::PARAM_STR);
+            $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
             $statement->bindValue(':content', strip_tags(getInputs()['content']), PDO::PARAM_STR);
             $statement->bindValue(':category', getInputs()['category'], PDO::PARAM_INT);
             $statement->bindValue(':link', getInputs()['link'], PDO::PARAM_STR);

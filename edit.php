@@ -1,10 +1,10 @@
 <?php
+session_start();
 // Require authentication script to protect data manipulation from unauthorized users
 require 'authenticate.php';
 // Require database data
 require('connect.php');
 // If statement to verify a Session variable 'message' has a value, and send the content in a alert script.
-session_start();
 if(!empty($_SESSION['message'])){
     $message = $_SESSION['message'];
     echo "<script>alert('{$message}')</script>";
@@ -29,9 +29,10 @@ if(isset($_GET['id'])){
         $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
         // SQL query
-        $query =   "SELECT i.item_id, i.item_name, i.author, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name 
+        $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname 
                     FROM items i 
-                    JOIN categories c ON c.category_id = i.category_id 
+                    JOIN categories c ON c.category_id = i.category_id
+                    JOIN users u ON i.user_id = u.user_id 
                     WHERE i.item_id = :id
                     AND i.slug = :slug";
 
@@ -99,72 +100,99 @@ if(isset($_POST['createCategory'])){
 <body>
     <!-- Include nav tag from template -->
     <?php include('nav.php'); ?>
-    <?php if(isset($_POST['addCategory'])): ?>
-    <div>
-        <!-- Delete confirmation form -->
-        <form method="post">
-            <fieldset>
-                <label for="newCategory">New Category</label>
-                <input type="hidden" id="id" name="id" value="<?= $id ?>">
-                <input type="hidden" id="slug" name="slug" value="<?= $slug ?>">
-                <input id="newCategory" type="text" name="newCategory">
-                <input type="submit" id="createCategory" name="createCategory" value="Add Category">
-                <input type="submit" id="cancelCreateCategory" name="cancelCreateCategory" value="Cancel">
-            </fieldset>
-        </form>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="shadow-sm">
+                    <div class="bg-white p-4">
+                        <h2 class="mb-4">Update <span class="text-warning">Item</span></h2>
+
+                        <main>
+                            <!-- Form sending the data to process.php -->
+                            <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
+                                <input type="hidden" id="id" name="id" value="<?= $item['item_id'] ?>">
+                                <input type="hidden" id="userId" name="userId" value="<?= $item['user_id'] ?>">
+                                
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Item Name</label>
+                                    <input id="name" type="text" name="name" value="<?= $item['item_name'] ?>" class="form-control" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <img src="/webdev2/project/images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>" class="img-thumbnail mb-2">
+                                    <label for="file" class="form-label">Image File</label>
+                                    <input type="file" name="file" id="file" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Content</label>
+                                    <textarea id="content" name="content" rows="10" class="form-control" required><?= $item['content'] ?></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Category</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="category" name="category" required>
+                                            <option value="" disabled>- Choose a Category -</option>
+                                            <?php foreach ($categories as $category): ?>
+                                            <option value="<?= $category['category_id'] ?>"
+                                                <?= ($category['category_id'] == $item['category_id']) ? 'selected' : '' ?>>
+                                                <?= $category['category_name'] ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                        <a class="btn btn-warning">Add New</a>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="link" class="form-label">Link to buy it</label>
+                                    <input id="link" type="text" name="link" value="<?= $item['store_url'] ?>" class="form-control" required>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="border-light bg-light p-3">
+                                        <p class="small text-muted mb-3">
+                                            You can specify your own link address. If you don't want to, you can
+                                            leave the box unchecked and the link will default to the item's name.
+                                        </p>
+
+                                        <div class="input-group">
+                                            <div class="input-group-text">
+                                                <input name="slugCheck" id="slugCheck" type="checkbox" class="form-check-input me-2">
+                                                <label for="slugCheck" class="form-check-label">Permalink</label>
+                                            </div>
+                                            <input name="slug" id="slug" type="text" class="form-control" value="<?= $item['slug'] ?>">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" id="submit" name="update" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Update Item
+                                    </button>
+                                    <button type="submit" id="delete" name="delete" class="btn btn-danger">
+                                        <i class="fas fa-trash-alt me-2"></i>Delete Item
+                                    </button>
+                                </div>
+                            </form>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <?php else: ?>
-    <div>
-        <h2>Update Item</h2>
-        <main>
-            <form method="post">
-                <input type="submit" id="addCategory" name="addCategory" value="Add Category">
-            </form>
-            <!-- Form sending the data to process.php -->
-            <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
-                <input type="hidden" id="id" name="id" value="<?= $item['item_id'] ?>">
-                <label for="name">Item Name</label>
-                <input id="name" type="text" name="name" value="<?= $item['item_name'] ?>" required>
-
-                <label for="author">Author Name</label>
-                <input id="author" type="text" name="author" value="<?= $item['author'] ?>">
-
-                <img src="/webdev2/project/images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>">
-                <label for='file'>Image File:</label>
-                <input type='file' name='file' id='file'>
-
-                <label for="content">Content</label>
-                <textarea id="content" name="content" rows="20" cols="50" required><?= $item['content'] ?></textarea>
-
-                <label for="category">Category</label>
-                <select id="category" name="category" required>
-                    <option value="" disabled>- Choose a Category -</option>
-                    <?php foreach ($categories as $category): ?>
-                    <option value="<?= $category['category_id'] ?>"
-                        <?= ($category['category_id'] == $item['category_id']) ? 'selected' : '' ?>>
-                        <?= $category['category_name'] ?></option>
-                    <?php endforeach ?>
-                </select>
-
-                <label for="newCategory">New Category</label>
-                <input id="newCategory" type="text" name="newCategory">
-
-                <label for="link">Link to buy it</label>
-                <input id="link" type="text" name="link" value="<?= $item['store_url'] ?>" required>
-
-                <input type="submit" id="submit" name="update" value="Update Item">
-                <input type="submit" id="delete" name="delete" value="Delete Item">
-            </form>
-        </main>
-    </div>
-    <?php endif ?>
+    <!-- Footer -->
+    <?php include('footer.php'); ?>
     <!-- Script to add the WYSIWYG editor. -->
     <script>
-    var textarea = document.getElementById('content');
-    sceditor.create(textarea, {
-        format: 'bbcode',
-        style: 'minified/themes/content/default.min.css',
-        toolbarExclude: 'table,code,quote,horizontalrule,image,email,link,unlink,emoticon,youtube,date,time,ltr,rtl,print,maximize,source,font,size,color,removeformat,subscript,superscript'
+    document.addEventListener('DOMContentLoaded', function() {
+        var textarea = document.getElementById('content');
+        sceditor.create(textarea, {
+            format: 'bbcode',
+            style: 'minified/themes/content/default.min.css',
+            toolbarExclude: 'table,code,quote,horizontalrule,image,email,link,unlink,emoticon,youtube,date,time,ltr,rtl,print,maximize,source,font,size,color,removeformat,subscript,superscript'
+        });
     });
     </script>
 </body>

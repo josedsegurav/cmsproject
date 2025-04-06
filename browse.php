@@ -6,8 +6,10 @@ require('connect.php');
 $title = "Browse Items";
 
 // SQL query
-$query = "SELECT i.item_id, i.item_name, i.author, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name 
-        FROM items i JOIN categories c ON c.category_id = i.category_id";
+$query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
+        FROM items i 
+        JOIN categories c ON c.category_id = i.category_id
+        JOIN users u ON i.user_id = u.user_id";
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($query);
 // Execution on the DB server.
@@ -26,9 +28,10 @@ if(isset($_GET['p'])){
         $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
         // SQL query
-        $query =   "SELECT i.item_id, i.item_name, i.author, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name, c.category_slug  
+        $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name, c.category_slug, u.name, u.lastname  
         FROM items i 
-        JOIN categories c ON c.category_id = i.category_id 
+        JOIN categories c ON c.category_id = i.category_id
+        JOIN users u ON i.user_id = u.user_id 
         WHERE c.category_slug = :slug";
 
         // A PDO::Statement is prepared from the query. 
@@ -64,6 +67,8 @@ if(isset($_GET['p'])){
     <?php elseif(isset($_GET['p']) && !$browseCategories): ?>
         <p>There are no items in that category.</p>
     <?php endif ?>
+        <!-- Footer -->
+        <?php include('footer.php'); ?>
     <script>
         var options = {
             closeOnScroll: true,

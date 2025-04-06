@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require('connect.php');
 
@@ -10,9 +11,10 @@ if(isset($_GET['p'])){
        // $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
         // SQL query
-        $query =   "SELECT i.item_id, i.item_name, i.author, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name 
+        $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
                     FROM items i 
-                    JOIN categories c ON c.category_id = i.category_id 
+                    JOIN categories c ON c.category_id = i.category_id
+                    JOIN users u ON i.user_id = u.user_id 
                     WHERE i.slug = :slug";
 
         // A PDO::Statement is prepared from the query. 
@@ -50,12 +52,12 @@ if(isset($_GET['p'])){
     <div>
         <div>
             <h2><a href="./"><?= $item['item_name'] ?></a></h2>
-            <span>Created by <?= $item['author'] ?> on
+            <span>Created by <?= $item['name'] ?>  <?= $item['lastname'] ?> on
                 <?= date("F d, Y, g:i a", strtotime($item['date_created'])) ?></span>
         </div>
         <div class="image">
-            <a href="/webdev2/project/images/<?= $item['image'] ?>"><img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
-                    alt="<?= $item['image'] ?>"></a>
+            <a href="/webdev2/project/images/<?= $item['image'] ?>"><img
+                    src="/webdev2/project/images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>"></a>
         </div>
         <p>Description:</p>
         <span><?= $item['content'] ?></span>
@@ -63,13 +65,14 @@ if(isset($_GET['p'])){
         <a id="lbox" href="<?= $item['store_url'] ?>" target="_blank">Link of the store</a>
 
     </div>
+    <!-- Footer -->
+    <?php include('footer.php'); ?>
     <script>
-        var options = {
-            closeOnScroll: true,
-        };
+    var options = {
+        closeOnScroll: true,
+    };
 
     new LuminousGallery(document.querySelectorAll(".image a"), options);
-    
     </script>
 </body>
 
