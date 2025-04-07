@@ -271,12 +271,6 @@ $_SESSION['message'] = "Item Deleted.";
 header("Location: /webdev2/project/dashboard/items");
 
 // // If statement checks if data is coming from the cancel button from the delete confirmation form.
-}elseif (isset($_POST['cancel'])) {
-    // Sanitizing id data into a number.
-    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $slug = filter_input(INPUT_POST, 'slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    // It is redirected to edit.php according to it's id data.
-    header("Location: /webdev2/project/items/edit/{$id}/{$slug}");
 }
 ?>
 

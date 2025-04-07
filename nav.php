@@ -26,6 +26,8 @@ $navStatement = $db->prepare($navCategoryQuery);
 $navStatement->execute();
 $navCategories = $navStatement->fetchAll();
 
+$categoriesSliced = array_slice($navCategories, 0, 5);
+
 if(isset($_POST['logOut'])){
     unset($_SESSION['user']);
     $userLogged = false;
@@ -35,15 +37,6 @@ if(isset($_POST['logOut'])){
 
 ?>
 <!-- Nav template -->
-<nav>
-    <h1><a href="/webdev2/project/">Interiour Design Items</a></h1>
-    <ul>
-        <li><a href="/webdev2/project/">Home</a></li>
-        <li><a href="/webdev2/project/browse">Browse Items</a></li>
-        <li><a href="/webdev2/project/add">Add Item</a></li>
-        <li><a href="/webdev2/project/items">Items List</a></li>
-    </ul>
-</nav>
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
     <div class="container">
         <a class="navbar-brand" href="/webdev2/project/">Interior<span class="text-warning">Items</span></a>
@@ -98,8 +91,8 @@ if(isset($_POST['logOut'])){
                 </div>
                 <?php else: ?>
                 <div class="d-flex">
-                    <a href="/webdev2/project/login.php" class="btn btn-outline-primary me-2">Log In</a>
-                    <a href="/webdev2/project/signUp.php" class="btn btn-outline-primary">Sign Up</a>
+                    <a href="/webdev2/project/login" class="btn btn-outline-primary me-2">Log In</a>
+                    <a href="/webdev2/project/signup" class="btn btn-outline-primary">Sign Up</a>
                 </div>
                 <?php endif ?>
             </div>

@@ -108,11 +108,23 @@ if($user['role'] === "admin"){
     
         }
 }elseif($user['role'] === "user"){
-    function getCountData($table, $db){
+    function getCountData($table, $db, $user){
 
-        $query = "SELECT COUNT(*) FROM $table";
+        $query = "";
+
+        if($table === "categories"){
+            $query = "SELECT COUNT(*) FROM $table";
+        }elseif($table === "comments"){
+            $query = "SELECT COUNT(*) FROM comments c JOIN items i ON c.item_id = i.item_id WHERE i.user_id = :user";
+        }else{
+            $query = "SELECT COUNT(*) FROM items WHERE user_id = :user";
+        }
+        
         // A PDO::Statement is prepared from the query.
         $statement = $db->prepare($query);
+        if($table !== "categories"){
+            $statement->bindValue(':user', $user, PDO::PARAM_INT);
+        }
         // Execution on the DB server.
         $statement->execute();
         $output = $statement->fetch();
@@ -148,7 +160,7 @@ if($user['role'] === "admin"){
             // A PDO::Statement is prepared from the query.
             $statement = $db->prepare($query);
             if($table !== "categories"){
-                $statement->bindValue(':user_id', $user['user_id'], PDO::PARAM_INT);
+                $statement->bindValue(':user_id', $user, PDO::PARAM_INT);
             }
             
             // Execution on the DB server.
@@ -171,16 +183,16 @@ if($user['role'] === "admin"){
         }
         
         
-        $totalUsers = getCountData("users", $db, $user);
+        $totalUsers = getCountData("users", $db, $user['user_id']);
         $userPages = ceil($totalUsers[0] / $resultsPerPage);
         
-        $totalItems = getCountData("items", $db, $user);
+        $totalItems = getCountData("items", $db, $user['user_id']);
         $itemsPages = ceil($totalItems[0] / $resultsPerPage);
         
-        $totalCategories = getCountData("categories", $db, $user);
+        $totalCategories = getCountData("categories", $db, $user['user_id']);
         $categoriesPages = ceil($totalCategories[0] / $resultsPerPage);
     
-        $totalComments = getCountData("comments", $db, $user);
+        $totalComments = getCountData("comments", $db, $user['user_id']);
         $commentsPages = ceil($totalComments[0] / $resultsPerPage);
     
         $tab = "";
@@ -190,7 +202,7 @@ if($user['role'] === "admin"){
             
             $tab = filter_input(INPUT_GET, 'manage', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     
-            $tabData = getGeneralData($tab, $db, $user);
+            $tabData = getGeneralData($tab, $db, $user['user_id']);
     
         }
 }
@@ -454,8 +466,11 @@ if($user['role'] === "admin"){
                     <tr>
                         <th scope="row"><?= $item['item_id'] ?></th>
                         <td>
+                            <?php if(!empty($item['image'])): ?>
                             <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
                                 alt="<?= $item['item_name'] ?>" class="thumbnail" width="50">
+                            <?php else: ?>
+                            <?php endif ?>
                         </td>
                         <td><?= $item['item_name'] ?></td>
                         <td><?= $item['name'] ?> <?= $item['lastname'] ?></td>
@@ -640,10 +655,32 @@ if($user['role'] === "admin"){
                             <i class="fas fa-edit me-2"></i>
                             <input type="submit" class="btn btn-primary" name="updateCategory" value="Update Category">
                         </div>
-                        <div class="d-flex align-items-center justify-content-center py-0 mb-3 btn btn-danger">
-                            <i class="fas fa-trash-alt me-2"></i>
-                            <input type="submit" class="btn btn-danger" name="deleteCategory" value="Delete Category">
+                        <button type="button" id="delete" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            class="btn btn-danger w-100">
+                            <i class="fas fa-trash-alt me-2"></i>Delete Item
+                        </button>
+                        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                            aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete this item? This action cannot be
+                                            undone.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                        <input type="submit" class="btn btn-danger" name="confirm" value="Delete">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -707,7 +744,7 @@ if($user['role'] === "admin"){
 
 
     <!-- Success Toast -->
-    <?php if($loginSuccess): ?>
+
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div id="successToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header bg-white text-dark border-bottom border-warning">
@@ -715,7 +752,6 @@ if($user['role'] === "admin"){
                     <i class="fas fa-check-circle me-2 text-warning"></i>
                     <span>Interior<span class="text-warning">Items</span></span>
                 </strong>
-                <small class="text-muted">just now</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body bg-white">
@@ -726,7 +762,9 @@ if($user['role'] === "admin"){
             </div>
         </div>
     </div>
-
+    <!-- Footer -->
+    <?php include('footer.php'); ?>
+    <?php if($loginSuccess): ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var successToast = new bootstrap.Toast(document.getElementById('successToast'), {
@@ -737,8 +775,6 @@ if($user['role'] === "admin"){
     </script>
     <?php endif ?>
 
-    <!-- Footer -->
-    <?php include('footer.php'); ?>
 </body>
 
 </html>

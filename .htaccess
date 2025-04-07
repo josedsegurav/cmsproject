@@ -16,6 +16,12 @@ RewriteRule ^dashboard$ dashboard.php [NC,L]
 # Handle dashboard category process request
 RewriteRule ^categoryprocess$ processcategory.php [NC,L]
 
+# Handle login request
+RewriteRule ^login$ login.php [NC,L]
+
+# Handle signup request
+RewriteRule ^signup$ signUp.php [NC,L]
+
 # Handle dashboard tab manage request
 RewriteRule ^dashboard/([^/]+)$ dashboard.php?manage=$1 [NC,L]
 

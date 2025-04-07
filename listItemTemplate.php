@@ -11,8 +11,8 @@
                 </a>
             </div>
             <?php else: ?>
-            <img src="/webdev2/project/images/No_Image_Available.jpg" alt="No image available"
-                class="img-fluid w-100 h-100 object-fit-cover">
+            <!-- <img src="/webdev2/project/images/No_Image_Available.jpg" alt="No image available"
+                class="img-fluid w-100 h-100 object-fit-cover"> -->
             <?php endif ?>
             <span class="category-pill position-absolute"
                 style="top: 10px; left: 10px; background-color: #e67e22; color: white; font-size: 0.8rem; padding: 0.25rem 0.75rem; border-radius: 50px;">

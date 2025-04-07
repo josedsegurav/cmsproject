@@ -54,7 +54,7 @@ session_start();
                     "email" => $loginData['email']
                 ];
                 $_SESSION['loggedMessage'] = "You have successfully logged in!";
-                header("Location: /webdev2/project/dashboard.php");
+                header("Location: /webdev2/project/dashboard");
             }else{
                 $passwordError = true;
             }
@@ -105,7 +105,7 @@ session_start();
                             </div>
 
                             <p class="text-center mt-3 mb-0">
-                                Don't have an account? <a href="signUp.php" class="text-primary">Sign Up</a>
+                                Don't have an account? <a href="/webdev2/project/signup" class="text-primary">Sign Up</a>
                             </p>
                         </form>
                     </div>
@@ -121,7 +121,6 @@ session_start();
                     <i class="fas fa-check-circle me-2 text-warning"></i>
                     <span>Interior<span class="text-warning">Items</span></span>
                 </strong>
-                <small class="text-muted">just now</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body bg-white">

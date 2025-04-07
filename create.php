@@ -3,7 +3,11 @@ session_start();
 
 if(!empty($_SESSION['user'])){
     $user = $_SESSION['user'];
+}else{
+    header("Location: /webdev2/project/login");
 }
+
+
 
 // Require authentication script to protect data manipulation from unauthorized users
  require 'authenticate.php';

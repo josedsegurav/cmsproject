@@ -117,8 +117,11 @@ if(isset($_POST['createCategory'])){
                                 </div>
 
                                 <div class="mb-3">
+                                    <?php if(!empty($item['image'])): ?>
                                     <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
                                         alt="<?= $item['image'] ?>" class="img-thumbnail mb-2">
+                                    <?php else: ?>
+                                    <?php endif ?>
                                     <label for="file" class="form-label">Image File</label>
                                     <input type="file" name="file" id="file" class="form-control">
                                 </div>
@@ -173,7 +176,7 @@ if(isset($_POST['createCategory'])){
                                     <button type="submit" id="submit" name="update" class="btn btn-primary">
                                         <i class="fas fa-save me-2"></i>Update Item
                                     </button>
-                                    <button type="button" id="delete" data-toggle="modal" data-target="#deleteModal"
+                                    <button type="button" id="delete" data-bs-toggle="modal" data-bs-target="#deleteModal"
                                         class="btn btn-danger">
                                         <i class="fas fa-trash-alt me-2"></i>Delete Item
                                     </button>
@@ -184,7 +187,7 @@ if(isset($_POST['createCategory'])){
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                                                <button type="button" class="btn-close" data-dismiss="modal"
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
@@ -193,8 +196,9 @@ if(isset($_POST['createCategory'])){
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Cancel</button>
-                                                <input type="submit" class="btn btn-danger" name="confirm" value="Delete">
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <input type="submit" class="btn btn-danger" name="confirm"
+                                                    value="Delete">
                                             </div>
                                         </div>
                                     </div>
@@ -206,17 +210,7 @@ if(isset($_POST['createCategory'])){
             </div>
         </div>
     </div>
-    <form method="post">
-        <fieldset>
-            <p>Confirm to delete post.
-                <input type="hidden" id="id" name="id" value="<?= $id ?>">
-                <input type="hidden" id="slug" name="slug" value="<?= $slug ?>">
-                <input type="submit" id="confirm" name="confirm" value="Ok">
-                <input type="submit" id="cancel" name="cancel" value="Cancel">
-            </p>
-        </fieldset>
-    </form>
-    </div>
+    
 
     <!-- Footer -->
     <?php include('footer.php'); ?>
