@@ -35,7 +35,10 @@ if(filterInput()){
 
     // Replacing spaces for dashes from name input to use it as a slug.
     $nameSlug = str_replace(" ", "-", $_POST['name']);
-    $defaultSlug = filter_var($nameSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $cleanSlug = preg_replace('/[^A-Za-z0-9\-]/', '', $nameSlug);
+    $singlehyphenSlug = preg_replace('/-+/', '-', $cleanSlug);
+    $finalSlug = preg_replace('/-$/', '', $singlehyphenSlug);
+    
     $userSlug = "";
     
     // Sanitize special characters from the data and storing it into an array.
@@ -44,14 +47,16 @@ if(filterInput()){
     'content' => filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS),
     'category' => filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT),
     'link' => filter_input(INPUT_POST, 'link', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-    
-];
+    ];
+
     if(isset($_POST['slugCheck']) && !empty($_POST['slug']) && !(trim($_POST['slug']) == '')){
-        $inputSlug = str_replace(" ", "-", $_POST['slug']);
-        $userSlug = filter_var($inputSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $inputs['slug'] = $userSlug;
+        $nameSlug = str_replace(" ", "-", $_POST['slug']);
+        $cleanSlug = preg_replace('/[^A-Za-z0-9\-]/', '', $nameSlug);
+        $singlehyphenSlug = preg_replace('/-+/', '-', $cleanSlug);
+        $finalSlug = preg_replace('/-$/', '', $singlehyphenSlug);
+        $inputs['slug'] = $finalSlug;
     }else{
-        $inputs['slug'] = $defaultSlug;
+        $inputs['slug'] = $finalSlug;
     }
 
     return $inputs;
@@ -183,9 +188,6 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         // If statement that checks if the data is coming from the create button from the create.php file.
     if($_FILES['file']['error'] === 4 && isset($_POST['create'])){
         $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
-        echo($_POST['userId']);
-        echo($_POST['name']);
-        echo($user_id);
         // SQL query
         $query = "INSERT INTO items (item_name, user_id, content, category_id, store_url, slug) 
                 VALUES (:name, :user_id, :content, :category, :link, :slug)";
@@ -214,7 +216,6 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
             // Sanitizing id data into a number.
             $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
             $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
-            print_r(getInputs());
             
             // SQL query
             $query = "UPDATE items 
@@ -238,7 +239,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
             // Variable session message added with update message.
             $_SESSION['message'] = "Item Updated.";
         
-            // Then it is redirected to edit.php according to it's id data.
+            // Then it is redirected to dashboard items tab
             header("Location: /webdev2/project/dashboard/items");
         }
     }

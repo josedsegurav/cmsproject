@@ -10,7 +10,6 @@ if(!empty($_SESSION['user'])){
 
 
 // Require authentication script to protect data manipulation from unauthorized users
- require 'authenticate.php';
  // Require database data
  require('connect.php');
 // Variable to add a name to the title in the html head tag

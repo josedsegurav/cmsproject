@@ -7,13 +7,12 @@
 }
  
 :root {
-    --bs-primary-rgb: rgb(44, 62, 80); 
+    --bs-primary-rgb: rgb(44, 62, 80);
+    --bs-secondary-rgb: rgb(236, 240, 241);
     --primary-color: #2c3e50;
     --secondary-color: #ecf0f1;
     --accent-color: #e67e22;
 }
-
-
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -25,13 +24,21 @@ body {
     background-color: var(--primary-color);
 }
 
+.bckg-primary {
+    background-color: var(--primary-color);
+}
+
+.bckg-secondary {
+    background-color: var(--secondary-color);
+}
+
 .navbar-brand {
     font-weight: 700;
     letter-spacing: 1px;
 }
 
 .hero-section {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('');
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/webdev2/project/images/background.png');
     background-size: cover;
     background-position: center;
     color: white;
@@ -149,5 +156,9 @@ footer {
 .stats-number {
     font-size: 2.5rem;
     font-weight: 700;
+    color: var(--accent-color);
+}
+
+.badge {
     color: var(--accent-color);
 }

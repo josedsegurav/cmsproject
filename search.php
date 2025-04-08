@@ -17,7 +17,7 @@ function filterInput() {
     }
 }
 
-$resultsPerPage = 3;
+$resultsPerPage = 4;
 $currentPage = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 $startQueryAt = $resultsPerPage * ($currentPage - 1);
 
@@ -36,7 +36,7 @@ if(isset($_GET['query'])) {
                              JOIN categories c ON c.category_id = i.category_id
                              JOIN users u ON i.user_id = u.user_id 
                              WHERE i.category_id = :category
-                             AND (i.item_name LIKE :search OR u.name LIKE :search OR u.lastname LIKE :search)";
+                             AND i.item_name LIKE :search";
         
         $countResultsStatement = $db->prepare($countResultsQuery);
         $countResultsStatement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -51,7 +51,7 @@ if(isset($_GET['query'])) {
                  JOIN categories c ON c.category_id = i.category_id
                  JOIN users u ON i.user_id = u.user_id 
                  WHERE i.category_id = :category
-                 AND (i.item_name LIKE :search OR u.name LIKE :search OR u.lastname LIKE :search)
+                 AND i.item_name LIKE :search
                  LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);
@@ -64,9 +64,7 @@ if(isset($_GET['query'])) {
         $countResultsQuery = "SELECT COUNT(*) FROM items i 
                              JOIN categories c ON c.category_id = i.category_id 
                              JOIN users u ON i.user_id = u.user_id 
-                             WHERE i.item_name LIKE :search 
-                             OR u.name LIKE :search 
-                             OR u.lastname LIKE :search";
+                             WHERE i.item_name LIKE :search";
         
         $countResultsStatement = $db->prepare($countResultsQuery);
         $countResultsStatement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -80,8 +78,6 @@ if(isset($_GET['query'])) {
                  JOIN categories c ON c.category_id = i.category_id
                  JOIN users u ON i.user_id = u.user_id  
                  WHERE i.item_name LIKE :search
-                 OR u.name LIKE :search 
-                 OR u.lastname LIKE :search
                  LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);
@@ -107,9 +103,7 @@ if(filterInput()) {
         $countResultsQuery = "SELECT COUNT(*) FROM items i 
                              JOIN categories c ON c.category_id = i.category_id 
                              JOIN users u ON i.user_id = u.user_id 
-                             WHERE i.item_name LIKE :search 
-                             OR u.name LIKE :search 
-                             OR u.lastname LIKE :search";
+                             WHERE i.item_name LIKE :search";
         
         $countResultsStatement = $db->prepare($countResultsQuery);
         $countResultsStatement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -123,8 +117,6 @@ if(filterInput()) {
                  JOIN categories c ON c.category_id = i.category_id 
                  JOIN users u ON i.user_id = u.user_id 
                  WHERE i.item_name LIKE :search
-                 OR u.name LIKE :search 
-                 OR u.lastname LIKE :search
                  LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);
@@ -141,7 +133,7 @@ if(filterInput()) {
                              JOIN categories c ON c.category_id = i.category_id 
                              JOIN users u ON i.user_id = u.user_id 
                              WHERE i.category_id = :category
-                             AND (i.item_name LIKE :search OR u.name LIKE :search OR u.lastname LIKE :search)";
+                             AND i.item_name LIKE :search";
         
         $countResultsStatement = $db->prepare($countResultsQuery);
         $countResultsStatement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -156,7 +148,7 @@ if(filterInput()) {
                  JOIN categories c ON c.category_id = i.category_id 
                  JOIN users u ON i.user_id = u.user_id 
                  WHERE i.category_id = :category
-                 AND (i.item_name LIKE :search OR u.name LIKE :search OR u.lastname LIKE :search)
+                 AND i.item_name LIKE :search
                  LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);

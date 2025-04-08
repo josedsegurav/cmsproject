@@ -63,9 +63,11 @@ if(isset($_POST['logOut'])){
                         <?php endforeach ?>
                     </ul>
                 </li>
+                <?php if($logged && $user['role'] === "admin"): ?>
                 <li class="nav-item">
                     <a class="nav-link" href="/webdev2/project/items">Items List</a>
                 </li>
+                <?php endif ?>
             </ul>
             <div class="d-flex align-items-center gap-3">
                 <div class="d-flex justify-content-center">

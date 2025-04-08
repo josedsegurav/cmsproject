@@ -1,7 +1,6 @@
 <?php
     session_start();
     // Require authentication script to protect data manipulation from unauthorized users
-    require 'authenticate.php';
     // Require database data
     require('connect.php');
     // Variable to add a name to the title in the html head tag
@@ -268,11 +267,13 @@
     <!-- Display first set of data before any sort or search -->
     <?php if (!generalListDisplay()): ?>
     <?php foreach ($items as $item): ?>
+
     <!-- Include a template for each item display -->
     <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
     <?php include 'listItemTemplate.php'; ?>
     <?php endforeach?>
     <?php endif?>
+    
     <!-- Display items by sorting -->
     <?php if (sortDisplay()): ?>
     <h2>Sorted by <?= $sortHeader ?></h2>

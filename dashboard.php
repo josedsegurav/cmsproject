@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+if(!empty($_SESSION['user'])){
+    $user = $_SESSION['user'];
+}else{
+    header("Location: /webdev2/project/login");
+}
+
 $loginSuccess = false;
 
 if(isset($_SESSION['loggedMessage'])){
@@ -14,15 +21,13 @@ if(!empty($_SESSION['message'])){
     unset($_SESSION['message']);
 }
 
-if(!empty($_SESSION['user'])){
-    $user = $_SESSION['user'];
-}
+
 
 $title = "Dashboard";
 
 require('connect.php');
 
-$resultsPerPage = 3;
+$resultsPerPage = 50;
 $currentPage = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 $startQueryAt = $resultsPerPage * ($currentPage - 1);
 
@@ -255,7 +260,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="?manage=users">Manage Users</a>
+                                <a class="page-link" href="/webdev2/project/dashboard/users">Manage Users</a>
                             </div>
                         </div>
                     </div>
@@ -274,7 +279,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="?manage=items">Manage Items</a>
+                                <a class="page-link" href="/webdev2/project/dashboard/items">Manage Items</a>
                             </div>
                         </div>
                     </div>
@@ -292,7 +297,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="?manage=comments">Manage Comments</a>
+                                <a class="page-link" href="/webdev2/project/dashboard/comments">Manage Comments</a>
                             </div>
                         </div>
                     </div>
@@ -310,7 +315,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="?manage=categories">Manage Categories</a>
+                                <a class="page-link" href="/webdev2/project/dashboard/categories">Manage Categories</a>
                             </div>
                         </div>
                     </div>
@@ -325,17 +330,19 @@ if($user['role'] === "admin"){
         <?php if($tab === "users"): ?>
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="mb-0">Manage Users</h3>
-            <div class="d-flex">
+
+            <form class="d-flex">
                 <div class="input-group me-2">
                     <input type="text" class="form-control" placeholder="Search users...">
                     <button class="btn btn-outline-secondary" type="button">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
-                <button class="btn btn-primary">
+                <a href="/webdev2/project/user-manage/add" class="btn btn-primary">
                     <i class="fas fa-plus-circle me-2"></i>Add User
-                </button>
-            </div>
+                </a>
+            </form>
+
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -346,6 +353,7 @@ if($user['role'] === "admin"){
                         <th scope="col">Username</th>
                         <th scope="col">Email</th>
                         <th scope="col">Role</th>
+                        <th scope="col">Date Created</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -361,22 +369,17 @@ if($user['role'] === "admin"){
                         <td><?= $user['username'] ?></td>
                         <td><?= $user['email'] ?></td>
                         <td>
-                            <span class="badge bg-<?= $user['role'] == 'admin' ? 'primary' : 'secondary' ?>">
+                            <span class="badge bckg-<?= $user['role'] === 'admin' ? 'primary' : 'secondary' ?>">
                                 <?= ucfirst($user['role']) ?>
                             </span>
                         </td>
                         <td><?= date('M d, Y', strtotime($user['created_at'])) ?></td>
                         <td>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-primary">
+                                <a href="/webdev2/project/user-manage/edit/<?= $user['user_id'] ?>"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-danger">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -475,7 +478,7 @@ if($user['role'] === "admin"){
                         <td><?= $item['item_name'] ?></td>
                         <td><?= $item['name'] ?> <?= $item['lastname'] ?></td>
                         <td>
-                            <span class="badge bg-info">
+                            <span class="badge bckg-secondary">
                                 <?= $item['category_name'] ?>
                             </span>
                         </td>
@@ -625,23 +628,23 @@ if($user['role'] === "admin"){
         <?php if($tab === "categories"): ?>
 
         <div class="row">
-            <div class="col-md-4">
-                <div class="border-0 shadow-sm">
+            <div class="col-md-6">
+                <div class="d-flex flex-column">
                     <div class="bg-white">
                         <h5 class="mb-0">Add Category</h5>
                     </div>
                     <form action="/webdev2/project/categoryprocess" method="post">
                         <div class="mb-3">
                             <label for="newCategory" class="form-label">Category Name</label>
-                            <input type="text" class="form-control" id="newCategory" name="newCategory">
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center py-0 mb-3 btn btn-primary">
+                            <input type="text" class="form-control w-50" id="newCategory" name="newCategory">
+                        </div class="d-flex align-items-center w-100">
+                        <div class="d-flex align-items-center justify-content-center py-0 mb-3 btn btn-primary w-50">
                             <i class="fas fa-plus-circle me-2"></i>
-                            <input type="submit" class="btn btn-primary" name="createCategory" value="Add Category">
-
+                            <input type="submit" class="btn btn-primary w-50" name="createCategory" value="Add Category">
                         </div>
+
                         <div class="mb-3">
-                            <select class="form-select mb-3" id="category" name="category">
+                            <select class="form-select mb-3 w-50" id="category" name="category">
                                 <option value="" disabled selected>- Choose a Category -</option>
                                 <?php foreach ($tabData as $row): ?>
                                 <option value="<?= $row['category_id'] ?>"><?= $row['category_name'] ?>
@@ -649,14 +652,14 @@ if($user['role'] === "admin"){
                                 <?php endforeach ?>
                             </select>
                             <label for="newCategory" class="form-label">New Category Name</label>
-                            <input type="text" class="form-control" id="updateCategoryName" name="updateCategoryName">
+                            <input type="text" class="form-control w-50" id="updateCategoryName" name="updateCategoryName">
                         </div>
-                        <div class="d-flex align-items-center justify-content-center py-0 mb-3 btn btn-primary">
+                        <div class="d-flex align-items-center justify-content-center py-0 mb-3 btn btn-primary w-50">
                             <i class="fas fa-edit me-2"></i>
                             <input type="submit" class="btn btn-primary" name="updateCategory" value="Update Category">
                         </div>
                         <button type="button" id="delete" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            class="btn btn-danger w-100">
+                            class="btn btn-danger w-50">
                             <i class="fas fa-trash-alt me-2"></i>Delete Item
                         </button>
                         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
@@ -684,7 +687,7 @@ if($user['role'] === "admin"){
                     </form>
                 </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <div class="border-0 shadow-sm">
                     <div class="bg-white">
                         <div class="d-flex justify-content-between align-items-center">
@@ -704,7 +707,6 @@ if($user['role'] === "admin"){
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Items</th>
-                                    <th scope="col">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -713,19 +715,7 @@ if($user['role'] === "admin"){
                                     <th scope="row"><?= $category['category_id'] ?></th>
                                     <td><?= $category['category_name'] ?></td>
                                     <td>
-                                        <span class="badge bg-info"><?= $category['item_count'] ?></span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-sm btn-outline-primary edit-category"
-                                                data-id="<?= $category['category_id'] ?>">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger delete-category"
-                                                data-id="<?= $category['category_id'] ?>">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </div>
+                                        <span class="badge bckg-secondary"><?= $category['item_count'] ?></span>
                                     </td>
                                 </tr>
                                 <?php endforeach ?>

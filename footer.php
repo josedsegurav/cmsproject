@@ -14,7 +14,8 @@
                 <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
                     <h5 class="text-white mb-4">Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white-50">Home</a></li>
+                        <li class="mb-2"><a href="/webdev2/project/
+                        " class="text-white-50">Home</a></li>
                         <li class="mb-2"><a href="#" class="text-white-50">Browse Items</a></li>
                         <li class="mb-2"><a href="#" class="text-white-50">Categories</a></li>
                         <li class="mb-2"><a href="#" class="text-white-50">Submit Item</a></li>

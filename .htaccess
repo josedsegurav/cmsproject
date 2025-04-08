@@ -22,6 +22,12 @@ RewriteRule ^login$ login.php [NC,L]
 # Handle signup request
 RewriteRule ^signup$ signUp.php [NC,L]
 
+# Handle admin user manage process request
+RewriteRule ^user-manage/add$ adduser.php [NC,L]
+
+# Handle admin user manage edit request
+RewriteRule ^user-manage/edit/([0-9]+)$ edituser.php?id=$1 [NC,L]
+
 # Handle dashboard tab manage request
 RewriteRule ^dashboard/([^/]+)$ dashboard.php?manage=$1 [NC,L]
 

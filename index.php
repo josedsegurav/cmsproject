@@ -95,7 +95,6 @@ $itemsSliced = array_slice($items, 0, 4);
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="card h-100 border-0 shadow-sm">
                         <div class="card-body">
-                            <div class="category-icon"><i class="fas fa-ellipsis-h"></i></div>
                             <a class="link-primary" href="/webdev2/project/browse">
                                 <h5>More</h5>
                             </a>
@@ -179,9 +178,6 @@ $itemsSliced = array_slice($items, 0, 4);
                     <p class="lead">Share it with our community and help others discover beautiful pieces for their
                         projects.</p>
                     <a href="/webdev2/project/add" class="btn btn-primary">Upload Your Item</a>
-                </div>
-                <div class="col-lg-6">
-                    <img src="" alt="Submit Item" class="img-fluid rounded shadow">
                 </div>
             </div>
         </div>
