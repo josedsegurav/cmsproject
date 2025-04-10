@@ -7,15 +7,12 @@ $userLogged= false;
 
 if(isset($_SESSION['user'])){
     $logged = true;
+    $user = $_SESSION['user'];
     if($_SESSION['user']['role'] === "admin"){
         $adminUser = true;
     }elseif($_SESSION['user']['role'] === "user"){
         $userLogged = true;
     }
-}
-
-if(!empty($_SESSION['user'])){
-    $user = $_SESSION['user'];
 }
 
 // SQL query

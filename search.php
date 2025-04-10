@@ -255,15 +255,6 @@ if(filterInput()) {
                             <i class="fas fa-search fa-3x mb-3" style="color: #e67e22;"></i>
                             <h3 class="mb-3">We need some input to begin the search</h3>
                             <p class="text-muted">Please enter keywords to find interior design items.</p>
-                            <form action="" method="GET" class="mt-4">
-                                <div class="input-group">
-                                    <input type="text" name="query" class="form-control"
-                                        placeholder="Search for items..."
-                                        style="border-radius: 50px 0 0 50px; padding: 0.75rem 1.5rem; border: 1px solid #ced4da;">
-                                    <button class="btn btn-primary" type="submit"
-                                        style="border-radius: 0 50px 50px 0; background-color: #2c3e50; border-color: #2c3e50;">Search</button>
-                                </div>
-                            </form>
                         </div>
                     </div>
                 </div>

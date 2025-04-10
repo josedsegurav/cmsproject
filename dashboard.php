@@ -56,7 +56,7 @@ if($user['role'] === "admin"){
                     JOIN users u ON i.user_id = u.user_id
                     ORDER BY i.date_created";
             }elseif($table === "comments"){
-                $query = "SELECT c.comment_id, c.comment_content, c.author_name, c.comment_date_created, c.status, i.item_name, i.slug
+                $query = "SELECT c.comment_id, c.comment_content, c.comment_date_created, c.status, i.item_name, i.slug
                 FROM comments c
                 JOIN items i ON i.item_id = c.item_id
                 ORDER BY c.comment_date_created";
@@ -473,6 +473,7 @@ if($user['role'] === "admin"){
                             <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
                                 alt="<?= $item['item_name'] ?>" class="thumbnail" width="50">
                             <?php else: ?>
+                                <i class="fas fa-image text-muted fs-1"></i>
                             <?php endif ?>
                         </td>
                         <td><?= $item['item_name'] ?></td>

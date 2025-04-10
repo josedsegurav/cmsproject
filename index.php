@@ -18,6 +18,9 @@ if(isset($_SESSION['loggedOutMessage'])){
     unset($_SESSION['loggedOutMessage']);
 }
 
+$currentPage = $_SERVER['PHP_SELF'];
+$_SESSION['current_page'] = $currentPage;
+
 $title = "Discover Trendy Design Pieces";
 
 function getCountData($table, $db){
@@ -49,7 +52,7 @@ $statement->execute();
 
 $items = $statement->fetchAll();
 
-$itemsSliced = array_slice($items, 0, 4);
+$itemsSliced = array_slice($items, 0, 3);
 
 
 
@@ -113,26 +116,8 @@ $itemsSliced = array_slice($items, 0, 4);
                 <a href="/webdev2/project/browse" class="btn btn-outline-primary">View All</a>
             </div>
             <div class="row">
-                <?php foreach($itemsSliced as $indexItem): ?>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
-                        <?php if(!empty($indexItem['image'])): ?>
-                        <img src="/webdev2/project/images/<?= $indexItem['image'] ?>" class="card-img-top"
-                            alt="Armchair">
-                        <?php else: ?>
-                        <?php endif ?>
-                        <div class="card-body">
-                            <span class="category-pill"><?= $indexItem['category_name'] ?></span>
-                            <h5 class="card-title"><?= $indexItem['item_name'] ?></h5>
-                            <p class="card-text"><?= substr($indexItem['content'], 0, 100) ?>...</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="/webdev2/project/items/<?= $indexItem['slug'] ?>"
-                                    class="btn btn-sm btn-outline-primary">View Details</a>
-                                <small class="text-muted">5 comments</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php foreach($itemsSliced as $item): ?>
+                    <?php include('listItemTemplate.php') ?>
                 <?php endforeach ?>
             </div>
         </div>

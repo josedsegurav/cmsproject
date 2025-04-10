@@ -54,7 +54,14 @@ session_start();
                     "email" => $loginData['email']
                 ];
                 $_SESSION['loggedMessage'] = "You have successfully logged in!";
-                header("Location: /webdev2/project/dashboard");
+
+                if (isset($_SESSION['previous_page']) && isset($_SESSION['current_page'])) {
+                    if($_SESSION['current_page'] === "/webdev2/project/item.php"){
+                    header("Location: " . $_SESSION['previous_page']);
+                }elseif($_SESSION['current_page'] !== "/webdev2/project/item.php") {
+                    header("Location: /webdev2/project/dashboard");
+                }
+                }
             }else{
                 $passwordError = true;
             }

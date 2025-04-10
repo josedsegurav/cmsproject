@@ -1,122 +1,52 @@
 <?php
     session_start();
 
-    if(empty($_SESSION['user']) || ($_SESSION['user']['role'] !== "admin")){
+    if(empty($_SESSION['user'])){
         header("Location: /webdev2/project/login");
     }
 
     require('connect.php');
 
-    $title = "User Process";
+    $title = "Comment Process";
 
     function filterInput() {
         if (
             $_POST && 
-            !empty($_POST['username']) &&
-            !empty($_POST['fname']) && 
-            !empty($_POST['lname']) && 
-            !empty($_POST['email']) &&
-            !empty($_POST['password']) &&
-            !empty($_POST['confirmPassword']) &&
-            !(trim($_POST['username']) == '') && 
-            !(trim($_POST['fname']) == '') &&
-            !(trim($_POST['lname']) == '') &&
-            !(trim($_POST['email']) == '') &&
-            !(trim($_POST['password']) == '') && 
-            !(trim($_POST['confirmPassword']) == '')){
+            !empty($_POST['item_id']) &&
+            !empty($_POST['user_id']) && 
+            !empty($_POST['comment_text']) &&
+            !(trim($_POST['comment_text']) == '')){
             return true;
         }else{
             return false;
         }
     }
 
+    if(filterInput()){
 
-        if(isset($_GET['id'])){
-            $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+        
+            $item_id = filter_input(INPUT_POST, 'item_id', FILTER_SANITIZE_NUMBER_INT);
+            $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
+            $content = filter_input(INPUT_POST, 'comment_text', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-            $query =   "SELECT user_id, role, name, lastname, email, username, password, created_at 
-                    FROM users 
-                    WHERE user_id = :id";
+            $query = "INSERT INTO comments (user_id, item_id, comment_content) 
+                        VALUES (:user_id, :item_id, :content)";
             
             // A PDO::Statement is prepared from the query. 
             $statement = $db->prepare($query);
             // Bind the value of the id coming from the GET and sanitized into the query.
-            $statement->bindValue(':id', $id, PDO::PARAM_INT);
+            $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $statement->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+            $statement->bindValue(':content', $content, PDO::PARAM_STR);
 
             // Execution on the DB server.
             $statement->execute();
-
-            // Get the data from the DB after the query was executed.
-            $userData = $statement->fetch();
-
-            return $userData;
-
-            }
-
-
-    $passwordMatchError = false;
-    $userError = false;
-    $emailError = false;
-
-    if(filterInput()){
-
-        if(isset($_GET['adduser'])){
-
-        $fname = filter_input(INPUT_POST, 'fname', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $lname = filter_input(INPUT_POST, 'lname', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-        $user_query = "SELECT * FROM users WHERE username = :username";
-        // A PDO::Statement is prepared from the query.
-        $userStatement = $db->prepare($user_query);
-        $userStatement->bindValue(':username', $username, PDO::PARAM_STR);
-        // Execution on the DB server.
-        $userStatement->execute();
-        $userData = $userStatement->fetch();
-
-        $email_query = "SELECT * FROM users WHERE email = :email";
-        // A PDO::Statement is prepared from the query.
-        $emailStatement = $db->prepare($email_query);
-        $emailStatement->bindValue(':email', $email, PDO::PARAM_STR);
-        // Execution on the DB server.
-        $emailStatement->execute();
-        $emailData = $emailStatement->fetch();
-
-        if($userData){
-            $userError = true;
-        }elseif($emailData){
-            $emailError = true;
-        }else{
-            if($password === $confirmPassword){
-                $hashPassword = password_hash($password, PASSWORD_DEFAULT);
-    
-                $signup_query = "INSERT INTO users (name, lastname, email, username, password) 
-                        VALUES (:fname, :lname, :email, :username, :password)";
-                // A PDO::Statement is prepared from the query.
-                $signupStatement = $db->prepare($signup_query);
-                $signupStatement->bindValue(':fname', $fname, PDO::PARAM_STR);
-                $signupStatement->bindValue(':lname', $lname, PDO::PARAM_STR);
-                $signupStatement->bindValue(':email', $email, PDO::PARAM_STR);
-                $signupStatement->bindValue(':username', $username, PDO::PARAM_STR);
-                $signupStatement->bindValue(':password', $hashPassword, PDO::PARAM_STR);
-                
-                // Execution on the DB server.
-                $success = $signupStatement->execute();
-    
-                if(!$success){
-                    $signUpError = true;
-                }else{
-                    header("Location: /webdev2/project/dashboard/users");
-                    exit();
+            
+            if (isset($_SESSION['previous_page']) && isset($_SESSION['current_page'])) {
+                if($_SESSION['current_page'] === "/webdev2/project/item.php"){
+                header("Location: " . $_SESSION['previous_page']);
                 }
-            }else{
-                $passwordMatchError = true;
-            }
-        }  
-    }      
+        }
     }
 ?>
 
