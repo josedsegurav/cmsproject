@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require('connect.php');
 
@@ -36,6 +37,8 @@ if(filterInput()){
         // Execution on the DB server.
         $statement->execute();
 
+        unset($_SESSION['categoryFormError']);
+
         header("Location: /webdev2/project/dashboard/categories");
 
     }elseif(isset($_POST['updateCategory'])) {
@@ -60,12 +63,17 @@ if(filterInput()){
         // Execution on the DB server.
         $statement->execute();
 
+        unset($_SESSION['categoryFormError']);
+
         header("Location: /webdev2/project/dashboard/categories");
     }
+}else{
+    $_SESSION['categoryFormError'] = "You need to fill the correct information.";
+    header("Location: /webdev2/project/dashboard/categories");
 }
 
 if(isset($_POST['confirm'])){
-    // Sanitizing id data into a number.
+// Sanitizing id data into a number.
 $id = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
 
 // SQL query
@@ -82,6 +90,8 @@ $statement->execute();
 // Variable session message added with delete message.
 
 $_SESSION['message'] = "Item Deleted.";
+
+unset($_SESSION['categoryFormError']);
 
 // Then it is redirected to index.php.
 header("Location: /webdev2/project/dashboard/categories");

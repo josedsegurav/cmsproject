@@ -64,7 +64,7 @@ if(isset($_GET['id'])){
        // Get the data from the DB after the query was executed.
        $item = $statement->fetch();
        $commentQuery = "SELECT u.name, u.lastname, 
-                       c.comment_content, c.comment_date_created 
+                       c.comment_content, c.disvowel_comment, c.comment_date_created, c.status 
                        FROM comments c 
                        JOIN users u ON c.user_id = u.user_id 
                        WHERE c.item_id = :item_id
@@ -96,7 +96,7 @@ if(isset($_GET['id'])){
 
 <body>
     <?php include('nav.php'); ?>
-    
+
     <!-- Item Header Section -->
     <section class="bg-light py-4">
         <div class="container">
@@ -125,19 +125,18 @@ if(isset($_GET['id'])){
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-0">
-                        <?php if(!empty($item['image'])): ?>
+                            <?php if(!empty($item['image'])): ?>
                             <div class="image">
                                 <a href="/webdev2/project/images/<?= $item['image'] ?>" class="d-block">
-                                    <img src="/webdev2/project/images/medium_<?= $item['image'] ?>" 
-                                         class="img-fluid rounded w-100" 
-                                         alt="<?= $item['image'] ?>">
+                                    <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
+                                        class="img-fluid rounded w-100" alt="<?= $item['image'] ?>">
                                 </a>
                             </div>
                             <?php else: ?>
-                                <div class="card-img-top bg-light text-center py-5">
-                                    <i class="fas fa-image text-muted fs-1"></i>
-                                </div>
-                                <?php endif ?>
+                            <div class="card-img-top bg-light text-center py-5">
+                                <i class="fas fa-image text-muted fs-1"></i>
+                            </div>
+                            <?php endif ?>
                         </div>
                     </div>
                 </div>
@@ -148,14 +147,15 @@ if(isset($_GET['id'])){
                             <div class="item-content mb-4">
                                 <?= $item['content'] ?>
                             </div>
-                            
+
                             <div class="item-meta mb-4">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p class="mb-1 text-muted">Category</p>
                                         <p class="mb-3 fw-bold">
                                             <i class="fas fa-tag me-2 text-info"></i>
-                                            <a class="fw-bold" href="/webdev2/project/browse/<?= $item['category_slug'] ?>"><?= $item['category_name'] ?></a>
+                                            <a class="fw-bold"
+                                                href="/webdev2/project/browse/<?= $item['category_slug'] ?>"><?= $item['category_name'] ?></a>
                                         </p>
                                     </div>
                                     <div class="col-md-6">
@@ -167,10 +167,9 @@ if(isset($_GET['id'])){
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="d-grid">
-                                <a id="lbox" href="<?= $item['store_url'] ?>" target="_blank" 
-                                   class="btn btn-primary">
+                                <a id="lbox" href="<?= $item['store_url'] ?>" target="_blank" class="btn btn-primary">
                                     <i class="fas fa-shopping-cart me-2"></i>
                                     Purchase from Store
                                 </a>
@@ -193,59 +192,71 @@ if(isset($_GET['id'])){
                         </div>
                         <div class="card-body">
                             <?php if (!empty($comments)): ?>
-                                <?php foreach ($comments as $comment): ?>
-                                    <div class="comment-item mb-4">
-                                        <div class="d-flex">
-                                            <div class="flex-shrink-0">
-                                                <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle p-3">
-                                                    <?= substr($comment['name'], 0, 1) ?><?= substr($comment['lastname'], 0, 1) ?>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1 ms-3">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <h6 class="mb-0 fw-bold"><?= $comment['name'] ?> <?= $comment['lastname'] ?></h6>
-                                                    <small class="text-muted"><?= date("M d, Y", strtotime($comment['comment_date_created'])) ?></small>
-                                                </div>
-                                                <p class="mb-0"><?= $comment['comment_content'] ?></p>
-                                            </div>
+                            <?php foreach ($comments as $comment): ?>
+                            <?php if($comment['status'] === "accepted" || $comment['status'] === "censored"): ?>
+                            <div class="comment-item mb-4">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle p-3">
+                                            <?= substr($comment['name'], 0, 1) ?><?= substr($comment['lastname'], 0, 1) ?>
                                         </div>
                                     </div>
-                                <?php endforeach ?>
-                            <?php else: ?>
-                                <div class="text-center py-4">
-                                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                                    <p class="mb-0">No comments yet. Be the first to comment!</p>
+                                    <div class="flex-grow-1 ms-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0 fw-bold"><?= $comment['name'] ?> <?= $comment['lastname'] ?>
+                                            </h6>
+                                            <small
+                                                class="text-muted"><?= date("M d, Y", strtotime($comment['comment_date_created'])) ?></small>
+                                        </div>
+                                        <?php if(!$comment['disvowel_comment']): ?>
+                                        <p class="mb-0"><?= $comment['comment_content'] ?></p>
+                                        <?php else: ?>
+                                        <p class="mb-0"><?= $comment['disvowel_comment'] ?></p>
+                                        <?php endif ?>
+                                    </div>
                                 </div>
+                            </div>
+                            <?php endif ?>
+                            <?php endforeach ?>
+                            <?php else: ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                                <p class="mb-0">No comments yet. Be the first to comment!</p>
+                            </div>
                             <?php endif ?>
 
                             <!-- Comment Form -->
                             <?php if ($logged): ?>
-                                <hr class="my-4">
-                                <h5 class="mb-3">Leave a Comment</h5>
-                                <form action="/webdev2/project/comments/add" method="post">
-                                    <input type="hidden" name="item_id" value="<?= $item['item_id'] ?>">
-                                    <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
-                                    <div class="mb-3">
-                                        <textarea class="form-control" name="comment_text" rows="3" placeholder="Share your thoughts about this item..."></textarea>
-                                    </div>
-                                    <div class="d-grid d-md-flex justify-content-md-end">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-paper-plane me-2"></i>Submit Comment
-                                        </button>
-                                    </div>
-                                </form>
-                            <?php else: ?>
-                                <hr class="my-4">
-                                <div class="alert alert-info mb-0">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <i class="fas fa-info-circle fa-lg"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <p class="mb-0">Please <a href="/webdev2/project/login">log in</a> to leave a comment.</p>
-                                        </div>
+                            <hr class="my-4">
+                            <h5 class="mb-3">Leave a Comment</h5>
+                            <form action="/webdev2/project/comments/add" method="post">
+                                <input type="hidden" name="item_id" value="<?= $item['item_id'] ?>">
+                                <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="comment_text" rows="3"
+                                        placeholder="Share your thoughts about this item..."></textarea>
+                                </div>
+                                <div class="d-grid d-md-flex justify-content-md-end">
+                                    <div class="btn btn-primary py-0">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <input type="submit" class="btn btn-primary" name="addcomment"
+                                            value="Submit Comment">
                                     </div>
                                 </div>
+                            </form>
+                            <?php else: ?>
+                            <hr class="my-4">
+                            <div class="alert alert-info mb-0">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-info-circle fa-lg"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <p class="mb-0">Please <a href="/webdev2/project/login">log in</a> to leave a
+                                            comment.</p>
+                                    </div>
+                                </div>
+                            </div>
                             <?php endif ?>
                         </div>
                     </div>
@@ -260,35 +271,37 @@ if(isset($_GET['id'])){
             <h2 class="section-title mb-4">Similar Items</h2>
             <div class="row g-4">
                 <?php if (!empty($relatedItems)) : ?>
-                    <?php foreach ($relatedItems as $relatedItem): ?>
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <img src="/webdev2/project/images/medium_<?= $relatedItem['image'] ?>" class="card-img-top" alt="<?= $relatedItem['item_name'] ?>">
-                                <div class="card-body">
-                                    <span class="category-pill"><?= $relatedItem['category_name'] ?></span>
-                                    <h5 class="card-title"><?= $relatedItem['item_name'] ?></h5>
-                                    <p class="card-text text-truncate"><?= strip_tags($relatedItem['content']) ?></p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <a href="/webdev2/project/items/view/<?= $relatedItem['item_id'] ?>" class="btn btn-sm btn-outline-primary">View Details</a>
-                                        <small class="text-muted"><?= $relatedItem['comment_count'] ?> comments</small>
-                                    </div>
-                                </div>
+                <?php foreach ($relatedItems as $relatedItem): ?>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <img src="/webdev2/project/images/medium_<?= $relatedItem['image'] ?>" class="card-img-top"
+                            alt="<?= $relatedItem['item_name'] ?>">
+                        <div class="card-body">
+                            <span class="category-pill"><?= $relatedItem['category_name'] ?></span>
+                            <h5 class="card-title"><?= $relatedItem['item_name'] ?></h5>
+                            <p class="card-text text-truncate"><?= strip_tags($relatedItem['content']) ?></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="/webdev2/project/items/view/<?= $relatedItem['item_id'] ?>"
+                                    class="btn btn-sm btn-outline-primary">View Details</a>
+                                <small class="text-muted"><?= $relatedItem['comment_count'] ?> comments</small>
                             </div>
                         </div>
-                    <?php endforeach ?>
-                <?php else: ?>
-                    <div class="col-12">
-                        <div class="alert alert-light text-center">
-                            <p class="mb-0">No similar items found.</p>
-                        </div>
                     </div>
+                </div>
+                <?php endforeach ?>
+                <?php else: ?>
+                <div class="col-12">
+                    <div class="alert alert-light text-center">
+                        <p class="mb-0">No similar items found.</p>
+                    </div>
+                </div>
                 <?php endif ?>
             </div>
         </div>
     </section>
-     <!-- Success Toast -->
+    <!-- Success Toast -->
 
-     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div id="successToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header bg-white text-dark border-bottom border-warning">
                 <strong class="me-auto">
@@ -308,7 +321,7 @@ if(isset($_GET['id'])){
 
     <!-- Footer -->
     <?php include('footer.php'); ?>
-    
+
     <script>
     var options = {
         closeOnScroll: true,

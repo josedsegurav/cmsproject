@@ -21,7 +21,14 @@ if(!empty($_SESSION['message'])){
     unset($_SESSION['message']);
 }
 
+$categoryFormError = false;
 
+if(!empty($_SESSION['categoryFormError'])){
+    $categoryFormError = true;
+    $categoryErrorMessage = $_SESSION['categoryFormError'];
+}
+
+unset($_SESSION['categoryFormError']);
 
 $title = "Dashboard";
 
@@ -56,10 +63,13 @@ if($user['role'] === "admin"){
                     JOIN users u ON i.user_id = u.user_id
                     ORDER BY i.date_created";
             }elseif($table === "comments"){
-                $query = "SELECT c.comment_id, c.comment_content, c.comment_date_created, c.status, i.item_name, i.slug
-                FROM comments c
-                JOIN items i ON i.item_id = c.item_id
-                ORDER BY c.comment_date_created";
+                $query =    "SELECT c.comment_id, c.user_id, c.comment_content, c.disvowel_comment, c.comment_date_created, c.status, c.review_reason, 
+                            i.item_id, i.item_name, i.slug, 
+                            u.name, u.lastname
+                            FROM comments c
+                            JOIN items i ON i.item_id = c.item_id
+                            JOIN users u ON c.user_id = u.user_id
+                            ORDER BY c.comment_date_created DESC";
             }elseif($table === "categories"){
                 $query = "SELECT c.category_id, c.category_name, c.category_slug, COUNT(i.item_name) AS 'item_count'  
                                 FROM categories c
@@ -149,12 +159,14 @@ if($user['role'] === "admin"){
                 WHERE i.user_id = :user_id
                 ORDER BY i.date_created";
             }elseif($table === "comments"){
-                $query = "SELECT c.comment_id, c.comment_content, c.author_name, c.comment_date_created, c.status, i.item_name, i.slug
-                FROM comments c
-                JOIN items i ON i.item_id = c.item_id
-                JOIN users u ON i.user_id = u.user_id
-                WHERE i.user_id = :user_id
-                ORDER BY c.comment_date_created";
+                $query =    "SELECT c.comment_id, c.comment_content, c.disvowel_comment, c.comment_date_created, c.status, 
+                            i.item_id, i.item_name, i.slug, 
+                            u.name, u.lastname
+                            FROM comments c
+                            JOIN items i ON i.item_id = c.item_id
+                            JOIN users u ON c.user_id = u.user_id
+                            WHERE i.user_id = :user_id 
+                            ORDER BY c.comment_date_created";
             }elseif($table === "categories"){
                 $query = "SELECT c.category_id, c.category_name, c.category_slug, COUNT(i.item_name) AS 'item_count'  
                                 FROM categories c
@@ -345,8 +357,8 @@ if($user['role'] === "admin"){
 
         </div>
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
@@ -452,8 +464,8 @@ if($user['role'] === "admin"){
             </div>
         </div>
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Image</th>
@@ -473,10 +485,10 @@ if($user['role'] === "admin"){
                             <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
                                 alt="<?= $item['item_name'] ?>" class="thumbnail" width="50">
                             <?php else: ?>
-                                <i class="fas fa-image text-muted fs-1"></i>
+                            <i class="fas fa-image text-muted fs-4"></i>
                             <?php endif ?>
                         </td>
-                        <td><?= $item['item_name'] ?></td>
+                        <td class="text-truncate" style="max-width: 150px;"><?= $item['item_name'] ?></td>
                         <td><?= $item['name'] ?> <?= $item['lastname'] ?></td>
                         <td>
                             <span class="badge bckg-secondary">
@@ -561,15 +573,15 @@ if($user['role'] === "admin"){
             </div>
         </div>
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Author</th>
                         <th scope="col">Item</th>
                         <th scope="col">Comment</th>
-                        <th scope="col">Date</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Date</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -577,33 +589,210 @@ if($user['role'] === "admin"){
                     <?php foreach ($tabData as $comment): ?>
                     <tr>
                         <th scope="row"><?= $comment['comment_id'] ?></th>
-                        <td><?= $comment['author_name'] ?></td>
+                        <td class="text-nowrap"><?= $comment['name'] ?> <?= $comment['lastname'] ?></td>
                         <td>
-                            <a href="/webdev2/project/items/<?= $comment['slug'] ?>"><?= $comment['item_name'] ?></a>
+                            <a href="/webdev2/project/items/<?= $comment['item_id'] ?>/<?= $comment['slug'] ?>"
+                                class="text-truncate d-inline-block"
+                                style="max-width: 120px;"><?= $comment['item_name'] ?></a>
                         </td>
                         <td>
-                            <div class="text-truncate" style="max-width: 250px;">
-                                <?= $comment['comment_text'] ?>
+                            <div class="text-truncate" style="max-width: 150px;">
+                                <?= $comment['comment_content'] ?>
                             </div>
                         </td>
-                        <td><?= date('M d, Y', strtotime($comment['comment_date_created'])) ?></td>
                         <td>
-                            <span class="badge bg-success">
+                            <span
+                                class="badge text-bg-<?= $comment['status'] === 'accepted' ? 'success' : ($comment['status'] === 'hidden' ? 'info' : 'warning') ?>">
                                 <?= $comment['status'] ?>
                             </span>
+                            <?php if($comment['disvowel_comment']): ?>
+                            <span class="badge bg-secondary ms-1">Disvoweled</span>
+                            <?php endif ?>
                         </td>
+                        <td class="text-nowrap"><?= date('M d, Y', strtotime($comment['comment_date_created'])) ?></td>
                         <td>
+                            <?php if($user['role'] === "admin"): ?>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-sm btn-outline-success">
-                                    <i class="fas fa-check"></i>
+                                <button type="button" data-bs-toggle="modal"
+                                    data-bs-target="#viewModal_<?= $comment['comment_id'] ?>"
+                                    class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-primary">
+                                <button type="button" data-bs-toggle="modal"
+                                    data-bs-target="#disvowelModal_<?= $comment['comment_id'] ?>"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-danger">
+                                <button type="button" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal_<?= $comment['comment_id'] ?>"
+                                    class="btn btn-sm btn-outline-danger">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
+
+                            <!-- View Modal -->
+                            <div class="modal fade" id="viewModal_<?= $comment['comment_id'] ?>" tabindex="-1"
+                                role="dialog" aria-labelledby="viewModalLabel_<?= $comment['comment_id'] ?>"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="viewModalLabel_<?= $comment['comment_id'] ?>">
+                                                Confirm Change</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Change the visibility of this item.</p>
+                                            <div class="mt-3">
+                                                <strong>Comment:</strong>
+                                                <p class="mb-0"><?= $comment['comment_content'] ?></p>
+                                            </div>
+                                            <?php if($comment['review_reason']): ?>
+                                            <div class="mt-3">
+                                                <strong>Reason for review:</strong>
+                                                <p class="mb-0"><?= $comment['review_reason'] ?></p>
+                                            </div>
+                                            <?php endif ?>
+                                        </div>
+                                        <form action="/webdev2/project/comments/add" method="post">
+                                            <div class="modal-footer">
+                                                <input type="hidden" name="comment_id"
+                                                    value="<?= $comment['comment_id'] ?>">
+                                                <input type="hidden" name="status" value="<?= $comment['status'] ?>">
+                                                <input type="hidden" name="censored"
+                                                    value="<?= $comment['disvowel_comment'] ? 'censored' : 'not censored' ?>">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <input type="submit" class="btn btn-primary" name="updateView"
+                                                    value="<?= ($comment['status'] === 'accepted' || $comment['status'] === 'censored' || $comment['status'] === 'review') ? 'Hide' : 'Show' ?>">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Disvowel Modal -->
+                            <div class="modal fade" id="disvowelModal_<?= $comment['comment_id'] ?>" tabindex="-1"
+                                role="dialog" aria-labelledby="disvowelModalLabel_<?= $comment['comment_id'] ?>"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="disvowelModalLabel_<?= $comment['comment_id'] ?>">Confirm Edit</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Disvowel the comment.</p>
+                                            <div class="mt-3">
+                                                <strong>Original comment:</strong>
+                                                <p class="mb-0"><?= $comment['comment_content'] ?></p>
+                                            </div>
+                                            <?php if($comment['review_reason']): ?>
+                                            <div class="mt-3">
+                                                <strong>Reason for review:</strong>
+                                                <p class="mb-0"><?= $comment['review_reason'] ?></p>
+                                            </div>
+                                            <?php endif ?>
+                                        </div>
+                                        <form action="/webdev2/project/comments/add" method="post">
+                                            <div class="modal-footer">
+                                                <input type="hidden" name="comment_id"
+                                                    value="<?= $comment['comment_id'] ?>">
+                                                <input type="hidden" name="content"
+                                                    value="<?= $comment['comment_content'] ?>">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <input type="submit" class="btn btn-primary" name="disvowel"
+                                                    value="Confirm">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal_<?= $comment['comment_id'] ?>" tabindex="-1"
+                                role="dialog" aria-labelledby="deleteModalLabel_<?= $comment['comment_id'] ?>"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel_<?= $comment['comment_id'] ?>">
+                                                Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete this item? This action cannot be undone.
+                                            </p>
+                                            <?php if($comment['review_reason']): ?>
+                                            <div class="mt-3">
+                                                <strong>Reason for review:</strong>
+                                                <p class="mb-0"><?= $comment['review_reason'] ?></p>
+                                            </div>
+                                            <?php endif ?>
+                                        </div>
+                                        <form action="/webdev2/project/comments/add" method="post">
+                                            <div class="modal-footer">
+                                                <input type="hidden" name="comment_id"
+                                                    value="<?= $comment['comment_id'] ?>">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <input type="submit" class="btn btn-danger" name="confirm"
+                                                    value="Delete">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php elseif($user['role'] === "user"): ?>
+                            <button type="button" data-bs-toggle="modal"
+                                data-bs-target="#reviewModal_<?= $comment['comment_id'] ?>"
+                                class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </button>
+
+                            <!-- Review Modal -->
+                            <div class="modal fade" id="reviewModal_<?= $comment['comment_id'] ?>" tabindex="-1"
+                                role="dialog" aria-labelledby="reviewModalLabel_<?= $comment['comment_id'] ?>"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="reviewModalLabel_<?= $comment['comment_id'] ?>">
+                                                Send comment for review</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Confirm if you want to send this comment for review.</p>
+                                        </div>
+                                        <form action="/webdev2/project/comments/add" method="post">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="comment_id"
+                                                    value="<?= $comment['comment_id'] ?>">
+                                                <div class="form-floating mb-3">
+                                                    <textarea class="form-control" name="review_reason"
+                                                        placeholder="Leave a comment here" id="floatingTextarea"
+                                                        style="height: 100px"></textarea>
+                                                    <label for="floatingTextarea">Comments (Optional)</label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <input type="submit" class="btn btn-danger" name="review"
+                                                    value="Confirm">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif ?>
                         </td>
                     </tr>
                     <?php endforeach ?>
@@ -631,38 +820,56 @@ if($user['role'] === "admin"){
         <div class="row">
             <div class="col-md-6">
                 <div class="d-flex flex-column">
+                    <?php if($categoryFormError): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i><?= $categoryErrorMessage ?>
+                    </div>
+                    <?php endif ?>
                     <div class="bg-white">
                         <h5 class="mb-0">Add Category</h5>
                     </div>
                     <form action="/webdev2/project/categoryprocess" method="post">
                         <div class="mb-3">
                             <label for="newCategory" class="form-label">Category Name</label>
-                            <input type="text" class="form-control w-50" id="newCategory" name="newCategory">
-                        </div class="d-flex align-items-center w-100">
-                        <div class="d-flex align-items-center justify-content-center py-0 mb-3 btn btn-primary w-50">
-                            <i class="fas fa-plus-circle me-2"></i>
-                            <input type="submit" class="btn btn-primary w-50" name="createCategory" value="Add Category">
+                            <input type="text" class="form-control" id="newCategory" name="newCategory">
+                        </div>
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit"
+                                class="btn btn-primary d-flex align-items-center justify-content-center"
+                                name="createCategory">
+                                <i class="fas fa-plus-circle me-2"></i>Add Category
+                            </button>
                         </div>
 
+                        <hr class="my-4">
+
+                        <h5 class="card-title mb-3">Update Category</h5>
                         <div class="mb-3">
-                            <select class="form-select mb-3 w-50" id="category" name="category">
+                            <label for="category" class="form-label">Select Category</label>
+                            <select class="form-select mb-3" id="category" name="category">
                                 <option value="" disabled selected>- Choose a Category -</option>
                                 <?php foreach ($tabData as $row): ?>
-                                <option value="<?= $row['category_id'] ?>"><?= $row['category_name'] ?>
-                                </option>
+                                <option value="<?= $row['category_id'] ?>"><?= $row['category_name'] ?></option>
                                 <?php endforeach ?>
                             </select>
-                            <label for="newCategory" class="form-label">New Category Name</label>
-                            <input type="text" class="form-control w-50" id="updateCategoryName" name="updateCategoryName">
+                            <label for="updateCategoryName" class="form-label">New Category Name</label>
+                            <input type="text" class="form-control" id="updateCategoryName" name="updateCategoryName">
                         </div>
-                        <div class="d-flex align-items-center justify-content-center py-0 mb-3 btn btn-primary w-50">
-                            <i class="fas fa-edit me-2"></i>
-                            <input type="submit" class="btn btn-primary" name="updateCategory" value="Update Category">
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit"
+                                class="btn btn-primary d-flex align-items-center justify-content-center"
+                                name="updateCategory">
+                                <i class="fas fa-edit me-2"></i>Update Category
+                            </button>
                         </div>
-                        <button type="button" id="delete" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            class="btn btn-danger w-50">
-                            <i class="fas fa-trash-alt me-2"></i>Delete Item
-                        </button>
+                        <div class="d-grid">
+                            <button type="button" id="delete" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-2"></i>Delete Category
+                            </button>
+                        </div>
+
+                        <!-- Delete Modal -->
                         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
                             aria-labelledby="deleteModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -673,8 +880,8 @@ if($user['role'] === "admin"){
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>Are you sure you want to delete this item? This action cannot be
-                                            undone.</p>
+                                        <p>Are you sure you want to delete this category? This action cannot be undone.
+                                        </p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
@@ -684,7 +891,6 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>

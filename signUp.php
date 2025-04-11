@@ -5,6 +5,10 @@
 
     $title = "Sign Up";
 
+    if(isset($_SESSION['user'])){
+        header("Location: /webdev2/project/dashboard");
+    }
+
     function filterInput() {
         if (
             $_POST && 

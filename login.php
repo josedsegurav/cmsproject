@@ -12,6 +12,11 @@ session_start();
     $signUpSuccess = true;
     unset($_SESSION['signUpMessage']);
 }
+
+    if(isset($_SESSION['user'])){
+        header("Location: /webdev2/project/dashboard");
+    }
+
     function filterInput() {
         if (
             $_POST && 
@@ -54,14 +59,22 @@ session_start();
                     "email" => $loginData['email']
                 ];
                 $_SESSION['loggedMessage'] = "You have successfully logged in!";
-
+                
                 if (isset($_SESSION['previous_page']) && isset($_SESSION['current_page'])) {
                     if($_SESSION['current_page'] === "/webdev2/project/item.php"){
+                        echo('here');
                     header("Location: " . $_SESSION['previous_page']);
                 }elseif($_SESSION['current_page'] !== "/webdev2/project/item.php") {
+                    echo('dash');
                     header("Location: /webdev2/project/dashboard");
                 }
+                echo('wth');
+                header("Location: /webdev2/project/dashboard");
+                }else{
+                    echo('wtf');
+                    header("Location: /webdev2/project/dashboard");
                 }
+                
             }else{
                 $passwordError = true;
             }
@@ -99,7 +112,7 @@ session_start();
                         <form method="post">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" required>
+                                <input type="text" class="form-control" id="username" name="username" autofocus required>
                             </div>
 
                             <div class="mb-3">
