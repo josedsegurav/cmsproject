@@ -39,7 +39,7 @@ if(filterInput()){
 
         unset($_SESSION['categoryFormError']);
 
-        header("Location: /webdev2/project/dashboard/categories");
+        header("Location: dashboard/categories");
 
     }elseif(isset($_POST['updateCategory'])) {
 
@@ -65,11 +65,11 @@ if(filterInput()){
 
         unset($_SESSION['categoryFormError']);
 
-        header("Location: /webdev2/project/dashboard/categories");
+        header("Location: dashboard/categories");
     }
 }else{
     $_SESSION['categoryFormError'] = "You need to fill the correct information.";
-    header("Location: /webdev2/project/dashboard/categories");
+    header("Location: dashboard/categories");
 }
 
 if(isset($_POST['confirm'])){
@@ -94,7 +94,7 @@ $_SESSION['message'] = "Item Deleted.";
 unset($_SESSION['categoryFormError']);
 
 // Then it is redirected to index.php.
-header("Location: /webdev2/project/dashboard/categories");
+header("Location: dashboard/categories");
 
 }
 

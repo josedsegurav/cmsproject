@@ -2,7 +2,7 @@
     session_start();
 
     if(empty($_SESSION['user']) || ($_SESSION['user']['role'] !== "admin")){
-        header("Location: /webdev2/project/login");
+        header("Location: login");
     }
     require('connect.php');
 
@@ -117,7 +117,7 @@
                         // Execution on the DB server.
                         $success = $signupStatement->execute();
                     
-                        header("Location: /webdev2/project/dashboard/users");
+                        header("Location: dashboard/users");
                         exit();
                     }else{
                         $passwordMatchError = true;
@@ -139,7 +139,7 @@
                 // Execution on the DB server.
                 $success = $signupStatement->execute();
             
-                    header("Location: /webdev2/project/dashboard/users");
+                    header("Location: dashboard/users");
                     exit();   
             }        
         }
@@ -162,7 +162,7 @@
         // Variable session message added with delete message.
         
         // Then it is redirected to index.php.
-        header("Location: /webdev2/project/dashboard/users");
+        header("Location: dashboard/users");
         
         }
     

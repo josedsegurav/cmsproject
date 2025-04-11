@@ -89,7 +89,7 @@ $itemsSliced = array_slice($items, 0, 3);
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="card h-100 border-0 shadow-sm">
                         <div class="card-body">
-                            <a class="link-primary" href="/webdev2/project/browse/<?= $row['category_slug'] ?>"><h5><?= $row['category_name'] ?></h5></a>
+                            <a class="link-primary" href="browse/<?= $row['category_slug'] ?>"><h5><?= $row['category_name'] ?></h5></a>
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@ $itemsSliced = array_slice($items, 0, 3);
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="card h-100 border-0 shadow-sm">
                         <div class="card-body">
-                            <a class="link-primary" href="/webdev2/project/browse">
+                            <a class="link-primary" href="browse">
                                 <h5>More</h5>
                             </a>
                         </div>
@@ -113,7 +113,7 @@ $itemsSliced = array_slice($items, 0, 3);
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title mb-0">Recently Added</h2>
-                <a href="/webdev2/project/browse" class="btn btn-outline-primary">View All</a>
+                <a href="browse" class="btn btn-outline-primary">View All</a>
             </div>
             <div class="row">
                 <?php foreach($itemsSliced as $item): ?>
@@ -149,7 +149,7 @@ $itemsSliced = array_slice($items, 0, 3);
             </div>
             <div class="text-center mt-4">
                 <p class="lead mb-4">Join our community of interior design enthusiasts!</p>
-                <a href="/webdev2/project/signup" class="btn btn-primary">Sign Up Now</a>
+                <a href="signup" class="btn btn-primary">Sign Up Now</a>
             </div>
         </div>
     </section>
@@ -162,7 +162,7 @@ $itemsSliced = array_slice($items, 0, 3);
                     <h2>Have an amazing design item?</h2>
                     <p class="lead">Share it with our community and help others discover beautiful pieces for their
                         projects.</p>
-                    <a href="/webdev2/project/add" class="btn btn-primary">Upload Your Item</a>
+                    <a href="add" class="btn btn-primary">Upload Your Item</a>
                 </div>
             </div>
         </div>

@@ -138,7 +138,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-       header("Location: /webdev2/project/dashboard/items");
+       header("Location: dashboard/items");
     }
 
     if(isset($_POST['id']) && isset($_POST['update'])){
@@ -179,7 +179,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $_SESSION['message'] = "Item Updated.";
     
         // Then it is redirected to edit.php according to it's id data.
-       header("Location: /webdev2/project/dashboard/items");
+       header("Location: dashboard/items");
     }
 }
 }else{
@@ -208,7 +208,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-        header("Location: /webdev2/project/dashboard/items");
+        header("Location: dashboard/items");
     }
 
         // Check if the error is an empty file input, if the id is set and the request comes from edit.php update button.
@@ -240,7 +240,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
             $_SESSION['message'] = "Item Updated.";
         
             // Then it is redirected to dashboard items tab
-            header("Location: /webdev2/project/dashboard/items");
+            header("Location: dashboard/items");
         }
     }
 }
@@ -269,7 +269,7 @@ $statement->execute();
 $_SESSION['message'] = "Item Deleted.";
 
 // Then it is redirected to index.php.
-header("Location: /webdev2/project/dashboard/items");
+header("Location: dashboard/items");
 
 // // If statement checks if data is coming from the cancel button from the delete confirmation form.
 }

@@ -4,7 +4,7 @@ session_start();
 if(!empty($_SESSION['user'])){
     $user = $_SESSION['user'];
 }else{
-    header("Location: /webdev2/project/login");
+    header("Location: login");
 }
 
 $loginSuccess = false;
@@ -245,7 +245,7 @@ if($user['role'] === "admin"){
                 <div class="col-md-6 text-md-end">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 justify-content-md-end">
-                            <li class="breadcrumb-item"><a href="/webdev2/project/" class="text-white-50">Home</a></li>
+                            <li class="breadcrumb-item"><a href="" class="text-white-50">Home</a></li>
                             <li class="breadcrumb-item active text-white" aria-current="page">Dashboard</li>
                         </ol>
                     </nav>
@@ -272,7 +272,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="/webdev2/project/dashboard/users">Manage Users</a>
+                                <a class="page-link" href="dashboard/users">Manage Users</a>
                             </div>
                         </div>
                     </div>
@@ -291,7 +291,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="/webdev2/project/dashboard/items">Manage Items</a>
+                                <a class="page-link" href="dashboard/items">Manage Items</a>
                             </div>
                         </div>
                     </div>
@@ -309,7 +309,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="/webdev2/project/dashboard/comments">Manage Comments</a>
+                                <a class="page-link" href="dashboard/comments">Manage Comments</a>
                             </div>
                         </div>
                     </div>
@@ -327,7 +327,7 @@ if($user['role'] === "admin"){
                                 </div>
                             </div>
                             <div>
-                                <a class="page-link" href="/webdev2/project/dashboard/categories">Manage Categories</a>
+                                <a class="page-link" href="dashboard/categories">Manage Categories</a>
                             </div>
                         </div>
                     </div>
@@ -350,7 +350,7 @@ if($user['role'] === "admin"){
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
-                <a href="/webdev2/project/user-manage/add" class="btn btn-primary">
+                <a href="user-manage/add" class="btn btn-primary">
                     <i class="fas fa-plus-circle me-2"></i>Add User
                 </a>
             </form>
@@ -388,7 +388,7 @@ if($user['role'] === "admin"){
                         <td><?= date('M d, Y', strtotime($user['created_at'])) ?></td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="/webdev2/project/user-manage/edit/<?= $user['user_id'] ?>"
+                                <a href="user-manage/edit/<?= $user['user_id'] ?>"
                                     class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -458,7 +458,7 @@ if($user['role'] === "admin"){
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
-                <a href="/webdev2/project/add" class="btn btn-primary">
+                <a href="add" class="btn btn-primary">
                     <i class="fas fa-plus-circle me-2"></i>Add Item
                 </a>
             </div>
@@ -482,7 +482,7 @@ if($user['role'] === "admin"){
                         <th scope="row"><?= $item['item_id'] ?></th>
                         <td>
                             <?php if(!empty($item['image'])): ?>
-                            <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
+                            <img src="images/medium_<?= $item['image'] ?>"
                                 alt="<?= $item['item_name'] ?>" class="thumbnail" width="50">
                             <?php else: ?>
                             <i class="fas fa-image text-muted fs-4"></i>
@@ -498,11 +498,11 @@ if($user['role'] === "admin"){
                         <td><?= date('M d, Y', strtotime($item['date_created'])) ?></td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="/webdev2/project/items/<?= $item['slug'] ?>"
+                                <a href="items/<?= $item['slug'] ?>"
                                     class="btn btn-sm btn-outline-secondary">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>"
+                                <a href="items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>"
                                     class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -591,7 +591,7 @@ if($user['role'] === "admin"){
                         <th scope="row"><?= $comment['comment_id'] ?></th>
                         <td class="text-nowrap"><?= $comment['name'] ?> <?= $comment['lastname'] ?></td>
                         <td>
-                            <a href="/webdev2/project/items/<?= $comment['item_id'] ?>/<?= $comment['slug'] ?>"
+                            <a href="items/<?= $comment['item_id'] ?>/<?= $comment['slug'] ?>"
                                 class="text-truncate d-inline-block"
                                 style="max-width: 120px;"><?= $comment['item_name'] ?></a>
                         </td>
@@ -655,7 +655,7 @@ if($user['role'] === "admin"){
                                             </div>
                                             <?php endif ?>
                                         </div>
-                                        <form action="/webdev2/project/comments/add" method="post">
+                                        <form action="comments/add" method="post">
                                             <div class="modal-footer">
                                                 <input type="hidden" name="comment_id"
                                                     value="<?= $comment['comment_id'] ?>">
@@ -697,7 +697,7 @@ if($user['role'] === "admin"){
                                             </div>
                                             <?php endif ?>
                                         </div>
-                                        <form action="/webdev2/project/comments/add" method="post">
+                                        <form action="comments/add" method="post">
                                             <div class="modal-footer">
                                                 <input type="hidden" name="comment_id"
                                                     value="<?= $comment['comment_id'] ?>">
@@ -735,7 +735,7 @@ if($user['role'] === "admin"){
                                             </div>
                                             <?php endif ?>
                                         </div>
-                                        <form action="/webdev2/project/comments/add" method="post">
+                                        <form action="comments/add" method="post">
                                             <div class="modal-footer">
                                                 <input type="hidden" name="comment_id"
                                                     value="<?= $comment['comment_id'] ?>">
@@ -771,7 +771,7 @@ if($user['role'] === "admin"){
                                         <div class="modal-body">
                                             <p>Confirm if you want to send this comment for review.</p>
                                         </div>
-                                        <form action="/webdev2/project/comments/add" method="post">
+                                        <form action="comments/add" method="post">
                                             <div class="modal-body">
                                                 <input type="hidden" name="comment_id"
                                                     value="<?= $comment['comment_id'] ?>">
@@ -828,7 +828,7 @@ if($user['role'] === "admin"){
                     <div class="bg-white">
                         <h5 class="mb-0">Add Category</h5>
                     </div>
-                    <form action="/webdev2/project/categoryprocess" method="post">
+                    <form action="categoryprocess" method="post">
                         <div class="mb-3">
                             <label for="newCategory" class="form-label">Category Name</label>
                             <input type="text" class="form-control" id="newCategory" name="newCategory">

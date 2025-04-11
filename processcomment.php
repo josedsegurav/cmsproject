@@ -2,7 +2,7 @@
     session_start();
 
     if(empty($_SESSION['user'])){
-        header("Location: /webdev2/project/login");
+        header("Location: login");
     }
 
     require('connect.php');
@@ -44,7 +44,7 @@
             $statement->execute();
             
             if (isset($_SESSION['previous_page']) && isset($_SESSION['current_page'])) {
-                if($_SESSION['current_page'] === "/webdev2/project/item.php"){
+                if($_SESSION['current_page'] === "item.php"){
                 header("Location: " . $_SESSION['previous_page']);
                 }
         }
@@ -71,7 +71,7 @@
         $_SESSION['message'] = "Item Deleted.";
 
         // Then it is redirected to index.php.
-        header("Location: /webdev2/project/dashboard/comments");
+        header("Location: dashboard/comments");
 
     }
 
@@ -108,10 +108,10 @@
 
         }else{
 
-            header("Location: /webdev2/project/dashboard/comments");
+            header("Location: dashboard/comments");
             exit();
         }
-            header("Location: /webdev2/project/dashboard/comments");
+            header("Location: dashboard/comments");
 
     }
 
@@ -133,7 +133,7 @@
             // Execution on the DB server.
             $statement->execute();
            
-            header("Location: /webdev2/project/dashboard/comments");
+            header("Location: dashboard/comments");
 
     }
 
@@ -157,7 +157,7 @@
             // Execution on the DB server.
             $statement->execute();
            
-            header("Location: /webdev2/project/dashboard/comments");
+            header("Location: dashboard/comments");
 
     }
 ?>

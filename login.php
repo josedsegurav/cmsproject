@@ -14,7 +14,7 @@ session_start();
 }
 
     if(isset($_SESSION['user'])){
-        header("Location: /webdev2/project/dashboard");
+        header("Location: dashboard");
     }
 
     function filterInput() {
@@ -61,18 +61,18 @@ session_start();
                 $_SESSION['loggedMessage'] = "You have successfully logged in!";
                 
                 if (isset($_SESSION['previous_page']) && isset($_SESSION['current_page'])) {
-                    if($_SESSION['current_page'] === "/webdev2/project/item.php"){
+                    if($_SESSION['current_page'] === "item.php"){
                         echo('here');
                     header("Location: " . $_SESSION['previous_page']);
-                }elseif($_SESSION['current_page'] !== "/webdev2/project/item.php") {
+                }elseif($_SESSION['current_page'] !== "item.php") {
                     echo('dash');
-                    header("Location: /webdev2/project/dashboard");
+                    header("Location: dashboard");
                 }
                 echo('wth');
-                header("Location: /webdev2/project/dashboard");
+                header("Location: dashboard");
                 }else{
                     echo('wtf');
-                    header("Location: /webdev2/project/dashboard");
+                    header("Location: dashboard");
                 }
                 
             }else{
@@ -125,7 +125,7 @@ session_start();
                             </div>
 
                             <p class="text-center mt-3 mb-0">
-                                Don't have an account? <a href="/webdev2/project/signup" class="text-primary">Sign Up</a>
+                                Don't have an account? <a href="signup" class="text-primary">Sign Up</a>
                             </p>
                         </form>
                     </div>

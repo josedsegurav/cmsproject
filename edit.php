@@ -51,7 +51,7 @@ if(isset($_GET['id'])){
 
     // If the input form the GET is not an int, it is redirected to index.php.
     }else{
-    header("Location: /webdev2/project/");
+    header("Location: ");
     }
 }
 
@@ -75,7 +75,7 @@ if(isset($_GET['id'])){
 
                         <main>
                             <!-- Form sending the data to process.php -->
-                            <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
+                            <form action="items/process" enctype='multipart/form-data' method="post">
                                 <input type="hidden" id="id" name="id" value="<?= $item['item_id'] ?>">
                                 <input type="hidden" id="userId" name="userId" value="<?= $item['user_id'] ?>">
 
@@ -87,7 +87,7 @@ if(isset($_GET['id'])){
 
                                 <div class="mb-3">
                                     <?php if(!empty($item['image'])): ?>
-                                    <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
+                                    <img src="images/medium_<?= $item['image'] ?>"
                                         alt="<?= $item['image'] ?>" class="img-thumbnail mb-2">
                                     <?php else: ?>
                                     <?php endif ?>
@@ -112,7 +112,7 @@ if(isset($_GET['id'])){
                                                 <?= $category['category_name'] ?></option>
                                             <?php endforeach ?>
                                         </select>
-                                        <a href="/webdev2/project/dashboard/categories" class="btn btn-warning">Add New</a>
+                                        <a href="dashboard/categories" class="btn btn-warning">Add New</a>
                                     </div>
                                 </div>
 

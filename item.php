@@ -102,8 +102,8 @@ if(isset($_GET['id'])){
         <div class="container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item"><a href="/webdev2/project/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/webdev2/project/browse">Items</a></li>
+                    <li class="breadcrumb-item"><a href="">Home</a></li>
+                    <li class="breadcrumb-item"><a href="browse">Items</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><?= $item['item_name'] ?></li>
                 </ol>
             </nav>
@@ -127,8 +127,8 @@ if(isset($_GET['id'])){
                         <div class="card-body p-0">
                             <?php if(!empty($item['image'])): ?>
                             <div class="image">
-                                <a href="/webdev2/project/images/<?= $item['image'] ?>" class="d-block">
-                                    <img src="/webdev2/project/images/medium_<?= $item['image'] ?>"
+                                <a href="images/<?= $item['image'] ?>" class="d-block">
+                                    <img src="images/medium_<?= $item['image'] ?>"
                                         class="img-fluid rounded w-100" alt="<?= $item['image'] ?>">
                                 </a>
                             </div>
@@ -155,7 +155,7 @@ if(isset($_GET['id'])){
                                         <p class="mb-3 fw-bold">
                                             <i class="fas fa-tag me-2 text-info"></i>
                                             <a class="fw-bold"
-                                                href="/webdev2/project/browse/<?= $item['category_slug'] ?>"><?= $item['category_name'] ?></a>
+                                                href="browse/<?= $item['category_slug'] ?>"><?= $item['category_name'] ?></a>
                                         </p>
                                     </div>
                                     <div class="col-md-6">
@@ -229,7 +229,7 @@ if(isset($_GET['id'])){
                             <?php if ($logged): ?>
                             <hr class="my-4">
                             <h5 class="mb-3">Leave a Comment</h5>
-                            <form action="/webdev2/project/comments/add" method="post">
+                            <form action="comments/add" method="post">
                                 <input type="hidden" name="item_id" value="<?= $item['item_id'] ?>">
                                 <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
                                 <div class="mb-3">
@@ -252,7 +252,7 @@ if(isset($_GET['id'])){
                                         <i class="fas fa-info-circle fa-lg"></i>
                                     </div>
                                     <div class="flex-grow-1 ms-3">
-                                        <p class="mb-0">Please <a href="/webdev2/project/login">log in</a> to leave a
+                                        <p class="mb-0">Please <a href="login">log in</a> to leave a
                                             comment.</p>
                                     </div>
                                 </div>
@@ -274,14 +274,14 @@ if(isset($_GET['id'])){
                 <?php foreach ($relatedItems as $relatedItem): ?>
                 <div class="col-md-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm">
-                        <img src="/webdev2/project/images/medium_<?= $relatedItem['image'] ?>" class="card-img-top"
+                        <img src="images/medium_<?= $relatedItem['image'] ?>" class="card-img-top"
                             alt="<?= $relatedItem['item_name'] ?>">
                         <div class="card-body">
                             <span class="category-pill"><?= $relatedItem['category_name'] ?></span>
                             <h5 class="card-title"><?= $relatedItem['item_name'] ?></h5>
                             <p class="card-text text-truncate"><?= strip_tags($relatedItem['content']) ?></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="/webdev2/project/items/view/<?= $relatedItem['item_id'] ?>"
+                                <a href="items/view/<?= $relatedItem['item_id'] ?>"
                                     class="btn btn-sm btn-outline-primary">View Details</a>
                                 <small class="text-muted"><?= $relatedItem['comment_count'] ?> comments</small>
                             </div>

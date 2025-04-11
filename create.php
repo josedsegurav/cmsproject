@@ -4,7 +4,7 @@ session_start();
 if(!empty($_SESSION['user'])){
     $user = $_SESSION['user'];
 }else{
-    header("Location: /webdev2/project/login");
+    header("Location: login");
 }
 
 
@@ -40,7 +40,7 @@ $categories = $statement->fetchAll();
 
                         <main>
                             <!-- Form sending the data to process.php -->
-                            <form action="/webdev2/project/items/process" enctype='multipart/form-data' method="post">
+                            <form action="items/process" enctype='multipart/form-data' method="post">
                                 <input type="hidden" id="userId" name="userId" value="<?= $user['user_id'] ?>">
 
                                 <div class="mb-3">

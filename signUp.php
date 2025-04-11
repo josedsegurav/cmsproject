@@ -6,7 +6,7 @@
     $title = "Sign Up";
 
     if(isset($_SESSION['user'])){
-        header("Location: /webdev2/project/dashboard");
+        header("Location: dashboard");
     }
 
     function filterInput() {
@@ -84,7 +84,7 @@
                     $signUpError = true;
                 }else{
                     $_SESSION['signUpMessage'] = "You have successfully registered!";
-                    header("Location: /webdev2/project/login.php");
+                    header("Location: login.php");
                     exit();
                 }
             }else{

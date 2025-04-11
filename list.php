@@ -269,7 +269,7 @@
     <?php foreach ($items as $item): ?>
 
     <!-- Include a template for each item display -->
-    <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
+    <span><a href="items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
     <?php include 'listItemTemplate.php'; ?>
     <?php endforeach?>
     <?php endif?>
@@ -280,7 +280,7 @@
     <?php foreach ($sortedList as $item): ?>
 
     <!-- Include a template for each item display -->
-    <span><a href="/webdev2/project/items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
+    <span><a href="items/edit/<?= $item['item_id'] ?>/<?= $item['slug'] ?>">edit item</a></span>
     <?php include 'listItemTemplate.php'; ?>
     <?php endforeach?>
     <?php endif?>
