@@ -2,7 +2,7 @@
 RewriteEngine On
 
 # Set the base directory to match your project path
-# RewriteBase /webdev2/project/
+RewriteBase /
 
 # Handle index page
 RewriteRule ^$ index.php [NC,L]
