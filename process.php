@@ -117,7 +117,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $medium_image->save($path_info['dirname'] . DIRECTORY_SEPARATOR . "medium_" . $path_info['filename'] . "." . $path_info['extension']);
 
         // SQL query
-        $query = "INSERT INTO items (item_name, user_id, content, category_id, store_url, image, slug) 
+        $query = "INSERT INTO serverside.items (item_name, user_id, content, category_id, store_url, image, slug) 
                 VALUES (:name, :user_id, :content, :category, :link, :img, :slug)";
 
         // A PDO::Statement is prepared from the query. 
@@ -138,7 +138,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-       header("Location: dashboard/items");
+       header("Location: ../dashboard/items");
     }
 
     if(isset($_POST['id']) && isset($_POST['update'])){
@@ -155,7 +155,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $medium_image->save($path_info['dirname'] . DIRECTORY_SEPARATOR . "medium_" . $path_info['filename'] . "." . $path_info['extension']);
 
         // SQL query
-        $query = "UPDATE items 
+        $query = "UPDATE serverside.items 
                 SET item_name = :name, user_id = :user_id, content = :content, category_id = :category, store_url = :link, image = :img, slug = :slug 
                 WHERE item_id = :id";
     
@@ -179,7 +179,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         $_SESSION['message'] = "Item Updated.";
     
         // Then it is redirected to edit.php according to it's id data.
-       header("Location: dashboard/items");
+       header("Location: ../dashboard/items");
     }
 }
 }else{
@@ -189,7 +189,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
     if($_FILES['file']['error'] === 4 && isset($_POST['create'])){
         $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
         // SQL query
-        $query = "INSERT INTO items (item_name, user_id, content, category_id, store_url, slug) 
+        $query = "INSERT INTO serverside.items (item_name, user_id, content, category_id, store_url, slug) 
                 VALUES (:name, :user_id, :content, :category, :link, :slug)";
 
         // A PDO::Statement is prepared from the query. 
@@ -208,7 +208,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
         
         $_SESSION['message'] = "Item Created.";
         // Then it is redirected to index.php.
-        header("Location: dashboard/items");
+        header("Location: ../dashboard/items");
     }
 
         // Check if the error is an empty file input, if the id is set and the request comes from edit.php update button.
@@ -218,7 +218,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
             $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
             
             // SQL query
-            $query = "UPDATE items 
+            $query = "UPDATE serverside.items 
                     SET item_name = :name, content = :content, category_id = :category, store_url = :link, slug = :slug 
                     WHERE item_id = :id AND user_id = :user_id";
         
@@ -240,7 +240,7 @@ if(filterInput() && file_is_an_image($temporary_file_path, $new_file_path)){
             $_SESSION['message'] = "Item Updated.";
         
             // Then it is redirected to dashboard items tab
-            header("Location: dashboard/items");
+            header("Location: ../dashboard/items");
         }
     }
 }
@@ -252,7 +252,7 @@ $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
 $user_id = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
 
 // SQL query
-$query = "DELETE FROM items WHERE item_id = :id AND user_id = :user_id";
+$query = "DELETE FROM serverside.items WHERE item_id = :id AND user_id = :user_id";
 
 // A PDO::Statement is prepared from the query.
 $statement = $db->prepare($query);
@@ -269,7 +269,7 @@ $statement->execute();
 $_SESSION['message'] = "Item Deleted.";
 
 // Then it is redirected to index.php.
-header("Location: dashboard/items");
+header("Location: ../dashboard/items");
 
 // // If statement checks if data is coming from the cancel button from the delete confirmation form.
 }

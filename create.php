@@ -7,7 +7,9 @@ if(!empty($_SESSION['user'])){
     header("Location: login");
 }
 
+require('utils/functions.php');
 
+    unsetRedirectSessions();
 
 // Require authentication script to protect data manipulation from unauthorized users
  // Require database data
@@ -16,7 +18,7 @@ if(!empty($_SESSION['user'])){
 $title = "Add Item";
 
 // SQL query
-$query = "SELECT * FROM categories";
+$query = "SELECT * FROM serverside.categories";
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($query);
 // Execution on the DB server.

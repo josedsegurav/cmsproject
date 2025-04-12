@@ -25,7 +25,7 @@ if(filterInput()){
         $newCategory = filter_input(INPUT_POST, 'newCategory', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $slug = filter_var($filterSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        $query = "INSERT INTO categories (category_name, category_slug) 
+        $query = "INSERT INTO serverside.categories (category_name, category_slug) 
         VALUES (:newCategory, :slug)";
 
         // A PDO::Statement is prepared from the query. 
@@ -49,7 +49,7 @@ if(filterInput()){
         $updateCategory = filter_input(INPUT_POST, 'updateCategoryName', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $slug = filter_var($filterSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        $query = "UPDATE categories 
+        $query = "UPDATE serverside.categories 
                 SET category_name = :updateCategory, category_slug = :slug 
                 WHERE category_id = :id";
 
@@ -77,7 +77,7 @@ if(isset($_POST['confirm'])){
 $id = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
 
 // SQL query
-$query = "DELETE FROM categories WHERE category_id = :id";
+$query = "DELETE FROM serverside.categories WHERE category_id = :id";
 
 // A PDO::Statement is prepared from the query.
 $statement = $db->prepare($query);

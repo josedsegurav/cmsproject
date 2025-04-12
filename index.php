@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+require('utils/functions.php');
+
+    unsetRedirectSessions();
+
 require('connect.php');
 
 $loginSuccess = false;
@@ -12,11 +16,7 @@ if(isset($_SESSION['loggedMessage'])){
     unset($_SESSION['loggedMessage']);
 }
 
-if(isset($_SESSION['loggedOutMessage'])){
-    $loggedOut = $_SESSION['loggedOutMessage'];
-    $logOutSuccess = true;
-    unset($_SESSION['loggedOutMessage']);
-}
+
 
 $currentPage = $_SERVER['PHP_SELF'];
 $_SESSION['current_page'] = $currentPage;
@@ -35,15 +35,15 @@ function getCountData($table, $db){
     return $output;
 }
 
-$usersTotal = getCountData("users", $db);
-$itemsTotal = getCountData("items", $db);
-$commentsTotal = getCountData("comments", $db);
+$usersTotal = getCountData("serverside.users", $db);
+$itemsTotal = getCountData("serverside.items", $db);
+$commentsTotal = getCountData("serverside.comments", $db);
 
 // SQL query
 $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname 
-        FROM items i 
-        JOIN categories c ON c.category_id = i.category_id
-        JOIN users u ON i.user_id = u.user_id
+        FROM serverside.items i 
+        JOIN serverside.categories c ON c.category_id = i.category_id
+        JOIN serverside.users u ON i.user_id = u.user_id
         ORDER BY i.date_created DESC";
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($query);
@@ -167,40 +167,10 @@ $itemsSliced = array_slice($items, 0, 3);
             </div>
         </div>
     </section>
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="successToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-white text-dark border-bottom border-warning">
-                <strong class="me-auto">
-                    <i class="fas fa-check-circle me-2 text-warning"></i>
-                    <span>Interior<span class="text-warning">Items</span></span>
-                </strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body bg-white">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-user-check text-primary me-2"></i>
-                    <?php if($loginSuccess): ?>
-                    <?= $loggedIn ?>
-                    <?php elseif($logOutSuccess): ?>
-                    <?= $loggedOut ?>
-                    <?php endif ?>
-                </div>
-            </div>
-        </div>
-    </div>
+   
     <!-- Footer -->
     <?php include('footer.php'); ?>
-    <?php if($loginSuccess || $logOutSuccess): ?>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var successToast = new bootstrap.Toast(document.getElementById('successToast'), {
-            delay: 5000
-        });
-        successToast.show();
-    });
-    </script>
-    <?php endif ?>
+  
 </body>
 
 </html>

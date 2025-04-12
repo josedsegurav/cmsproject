@@ -3,13 +3,17 @@ session_start();
 
 // Require database data
 require('connect.php');
-// If statement to verify a Session variable 'message' has a value, and send the content in a alert script.
+
+require('utils/functions.php');
+
+    unsetRedirectSessions();
+$_SESSION['editItem'] = true;
 
 // Variable to add a name to the title in the html head tag
 $title = "Update Item.";
 
 // SQL query
-$category_query = "SELECT * FROM categories";
+$category_query = "SELECT * FROM serverside.categories";
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($category_query);
 // Execution on the DB server.
@@ -25,9 +29,9 @@ if(isset($_GET['id'])){
         $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
         // SQL query
         $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname 
-                    FROM items i 
-                    JOIN categories c ON c.category_id = i.category_id
-                    JOIN users u ON i.user_id = u.user_id 
+                    FROM serverside.items i 
+                    JOIN serverside.categories c ON c.category_id = i.category_id
+                    JOIN serverside.users u ON i.user_id = u.user_id 
                     WHERE i.item_id = :id
                     AND i.slug = :slug";
 

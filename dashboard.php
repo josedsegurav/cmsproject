@@ -1,11 +1,18 @@
 <?php
 session_start();
 
+require('utils/functions.php');
+
+    unsetRedirectSessions();
+
 if(!empty($_SESSION['user'])){
     $user = $_SESSION['user'];
 }else{
     header("Location: login");
 }
+
+$currentPage = $_SERVER['PHP_SELF'];
+$_SESSION['current_page'] = $currentPage;
 
 $loginSuccess = false;
 
@@ -42,7 +49,7 @@ if($user['role'] === "admin"){
 
     function getCountData($table, $db){
 
-        $query = "SELECT COUNT(*) FROM $table";
+        $query = "SELECT COUNT(*) FROM serverside.$table";
         // A PDO::Statement is prepared from the query.
         $statement = $db->prepare($query);
         // Execution on the DB server.
@@ -58,25 +65,25 @@ if($user['role'] === "admin"){
     
             if($table === "items"){
             $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
-                    FROM items i
-                    JOIN categories c ON c.category_id = i.category_id
-                    JOIN users u ON i.user_id = u.user_id
+                    FROM serverside.items i
+                    JOIN serverside.categories c ON c.category_id = i.category_id
+                    JOIN serverside.users u ON i.user_id = u.user_id
                     ORDER BY i.date_created";
             }elseif($table === "comments"){
                 $query =    "SELECT c.comment_id, c.user_id, c.comment_content, c.disvowel_comment, c.comment_date_created, c.status, c.review_reason, 
                             i.item_id, i.item_name, i.slug, 
                             u.name, u.lastname
-                            FROM comments c
-                            JOIN items i ON i.item_id = c.item_id
-                            JOIN users u ON c.user_id = u.user_id
+                            FROM serverside.comments c
+                            JOIN serverside.items i ON i.item_id = c.item_id
+                            JOIN serverside.users u ON c.user_id = u.user_id
                             ORDER BY c.comment_date_created DESC";
             }elseif($table === "categories"){
-                $query = "SELECT c.category_id, c.category_name, c.category_slug, COUNT(i.item_name) AS 'item_count'  
-                                FROM categories c
-                                LEFT JOIN items i ON c.category_id = i.category_id
-                                GROUP BY c.category_id";
+                $query =    "SELECT c.category_id, c.category_name, c.category_slug, COUNT(i.item_name) AS item_count
+                            FROM serverside.categories c                                 
+                            LEFT JOIN serverside.items i ON c.category_id = i.category_id                                 
+                            GROUP BY c.category_id, c.category_name, c.category_slug";
             }else{
-                $query = "SELECT * FROM $table";
+                $query = "SELECT * FROM serverside.$table";
             }
     
             // A PDO::Statement is prepared from the query.
@@ -128,11 +135,11 @@ if($user['role'] === "admin"){
         $query = "";
 
         if($table === "categories"){
-            $query = "SELECT COUNT(*) FROM $table";
+            $query = "SELECT COUNT(*) FROM serverside.$table";
         }elseif($table === "comments"){
-            $query = "SELECT COUNT(*) FROM comments c JOIN items i ON c.item_id = i.item_id WHERE i.user_id = :user";
+            $query = "SELECT COUNT(*) FROM serverside.comments c JOIN serverside.items i ON c.item_id = i.item_id WHERE i.user_id = :user";
         }else{
-            $query = "SELECT COUNT(*) FROM items WHERE user_id = :user";
+            $query = "SELECT COUNT(*) FROM serverside.items WHERE user_id = :user";
         }
         
         // A PDO::Statement is prepared from the query.
@@ -153,25 +160,25 @@ if($user['role'] === "admin"){
     
             if($table === "items"){
                 $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
-                FROM items i
-                JOIN categories c ON c.category_id = i.category_id
-                JOIN users u ON i.user_id = u.user_id
+                FROM serverside.items i
+                JOIN serverside.categories c ON c.category_id = i.category_id
+                JOIN serverside.users u ON i.user_id = u.user_id
                 WHERE i.user_id = :user_id
                 ORDER BY i.date_created";
             }elseif($table === "comments"){
                 $query =    "SELECT c.comment_id, c.comment_content, c.disvowel_comment, c.comment_date_created, c.status, 
                             i.item_id, i.item_name, i.slug, 
                             u.name, u.lastname
-                            FROM comments c
-                            JOIN items i ON i.item_id = c.item_id
-                            JOIN users u ON c.user_id = u.user_id
+                            FROM serverside.comments c
+                            JOIN serverside.items i ON i.item_id = c.item_id
+                            JOIN serverside.users u ON c.user_id = u.user_id
                             WHERE i.user_id = :user_id 
                             ORDER BY c.comment_date_created";
             }elseif($table === "categories"){
                 $query = "SELECT c.category_id, c.category_name, c.category_slug, COUNT(i.item_name) AS 'item_count'  
-                                FROM categories c
-                                LEFT JOIN items i ON c.category_id = i.category_id
-                                GROUP BY c.category_id";
+                                FROM serverside.categories c
+                                LEFT JOIN serverside.items i ON c.category_id = i.category_id
+                                GROUP BY c.category_id, c.category_name, c.category_slug";
             }
     
             // A PDO::Statement is prepared from the query.
@@ -220,6 +227,8 @@ if($user['role'] === "admin"){
             $tab = filter_input(INPUT_GET, 'manage', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     
             $tabData = getGeneralData($tab, $db, $user['user_id']);
+
+            $_SESSION['dashboardTab'] = true;
     
         }
 }
@@ -498,7 +507,7 @@ if($user['role'] === "admin"){
                         <td><?= date('M d, Y', strtotime($item['date_created'])) ?></td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="items/<?= $item['slug'] ?>"
+                                <a href="items/<?= $item['item_id'] ?>/<?= $item['slug'] ?>"
                                     class="btn btn-sm btn-outline-secondary">
                                     <i class="fas fa-eye"></i>
                                 </a>

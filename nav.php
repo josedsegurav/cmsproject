@@ -16,7 +16,7 @@ if(isset($_SESSION['user'])){
 }
 
 // SQL query
-$navCategoryQuery = "SELECT * FROM categories";
+$navCategoryQuery = "SELECT * FROM serverside.categories";
 // A PDO::Statement is prepared from the query. 
 $navStatement = $db->prepare($navCategoryQuery);
 // Execution on the DB server.
@@ -26,10 +26,34 @@ $navCategories = $navStatement->fetchAll();
 $categoriesSliced = array_slice($navCategories, 0, 5);
 
 if(isset($_POST['logOut'])){
+
     unset($_SESSION['user']);
-    $userLogged = false;
+    $logged = false;
     $_SESSION['loggedOutMessage'] = "You have successfully logged out!";
-    header("Location: ");
+
+    if($_SESSION['dashboardTab'] || $_SESSION['categoryBrowse']  || $_SESSION['createUser']){
+
+
+        header("Location: ../login");
+
+    }elseif($_SESSION['loginRquestItem'] || $_SESSION['editUser']){
+
+
+        header("Location: ../../login");
+
+    }elseif($_SESSION['createItem']){
+        
+
+        header("Location: login");
+
+    }elseif($_SESSION['editItem']){
+
+        header("Location: ../../../login");
+
+    }else{
+        header("Location: login");
+    }
+    
 }
 
 ?>

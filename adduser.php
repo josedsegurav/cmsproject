@@ -2,10 +2,15 @@
     session_start();
 
     require('connect.php');
+    require('utils/functions.php');
+
+    unsetRedirectSessions();
 
     if(empty($_SESSION['user']) || ($_SESSION['user']['role'] !== "admin")){
         header("Location: /webdev2/project/login");
     }
+
+    $_SESSION['createUser'] = true;
 
     $title = "Add User";
 
@@ -44,7 +49,7 @@
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        $user_query = "SELECT * FROM users WHERE username = :username";
+        $user_query = "SELECT * FROM serverside.users WHERE username = :username";
         // A PDO::Statement is prepared from the query.
         $userStatement = $db->prepare($user_query);
         $userStatement->bindValue(':username', $username, PDO::PARAM_STR);
@@ -52,7 +57,7 @@
         $userStatement->execute();
         $userData = $userStatement->fetch();
 
-        $email_query = "SELECT * FROM users WHERE email = :email";
+        $email_query = "SELECT * FROM serverside.users WHERE email = :email";
         // A PDO::Statement is prepared from the query.
         $emailStatement = $db->prepare($email_query);
         $emailStatement->bindValue(':email', $email, PDO::PARAM_STR);
@@ -68,7 +73,7 @@
             if($password === $confirmPassword){
                 $hashPassword = password_hash($password, PASSWORD_DEFAULT);
     
-                $signup_query = "INSERT INTO users (name, lastname, email, username, password) 
+                $signup_query = "INSERT INTO serverside.users (name, lastname, email, username, password) 
                         VALUES (:fname, :lname, :email, :username, :password)";
                 // A PDO::Statement is prepared from the query.
                 $signupStatement = $db->prepare($signup_query);

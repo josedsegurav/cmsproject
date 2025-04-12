@@ -5,7 +5,7 @@ RewriteEngine On
 RewriteBase /webdev2/project/
 
 # Handle index page
-RewriteRule ^$ index.php [NC,L]
+RewriteRule ^/$ index.php [NC,L]
 
 # Handle browse items request
 RewriteRule ^browse$ browse.php [NC,L]

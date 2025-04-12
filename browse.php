@@ -1,15 +1,19 @@
 <?php
 session_start();
 
+require('utils/functions.php');
+
+    unsetRedirectSessions();
+
 require('connect.php');
 
 $title = "Browse Items";
 
 // SQL query
 $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
-        FROM items i 
-        JOIN categories c ON c.category_id = i.category_id
-        JOIN users u ON i.user_id = u.user_id
+        FROM serverside.items i 
+        JOIN serverside.categories c ON c.category_id = i.category_id
+        JOIN serverside.users u ON i.user_id = u.user_id
         ORDER BY i.date_created DESC";
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($query);
@@ -30,9 +34,9 @@ if(isset($_GET['p'])){
         $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
         // SQL query
         $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, c.category_name, c.category_slug, u.name, u.lastname  
-        FROM items i 
-        JOIN categories c ON c.category_id = i.category_id
-        JOIN users u ON i.user_id = u.user_id 
+        FROM serverside.items i 
+        JOIN serverside.categories c ON c.category_id = i.category_id
+        JOIN serverside.users u ON i.user_id = u.user_id 
         WHERE c.category_slug = :slug";
 
         // A PDO::Statement is prepared from the query. 
@@ -46,6 +50,7 @@ if(isset($_GET['p'])){
         // Get the data from the DB after the query was executed.
         $browseCategories = $statement->fetchAll();
 
+        $_SESSION['categoryBrowse'] = true;
 }
 
 ?>

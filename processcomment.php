@@ -29,8 +29,9 @@
             $item_id = filter_input(INPUT_POST, 'item_id', FILTER_SANITIZE_NUMBER_INT);
             $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
             $content = filter_input(INPUT_POST, 'comment_text', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $slug = filter_input(INPUT_POST, 'slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-            $query = "INSERT INTO comments (user_id, item_id, comment_content) 
+            $query = "INSERT INTO serverside.comments (user_id, item_id, comment_content) 
                         VALUES (:user_id, :item_id, :content)";
             
             // A PDO::Statement is prepared from the query. 
@@ -43,20 +44,18 @@
             // Execution on the DB server.
             $statement->execute();
             
-            if (isset($_SESSION['previous_page']) && isset($_SESSION['current_page'])) {
-                if($_SESSION['current_page'] === "item.php"){
-                header("Location: " . $_SESSION['previous_page']);
-                }
+            header("Location: ../items/$item_id/$slug");
+                
         }
     }
-    }
+    
 
     if(isset($_POST['confirm'])){
         // Sanitizing id data into a number.
         $id = filter_input(INPUT_POST, 'comment_id', FILTER_SANITIZE_NUMBER_INT);
 
         // SQL query
-        $query = "DELETE FROM comments WHERE comment_id = :id";
+        $query = "DELETE FROM serverside.comments WHERE comment_id = :id";
 
         // A PDO::Statement is prepared from the query.
         $statement = $db->prepare($query);
@@ -79,7 +78,7 @@
 
         $id = filter_input(INPUT_POST, 'comment_id', FILTER_SANITIZE_NUMBER_INT);
         $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $query = "UPDATE comments 
+        $query = "UPDATE serverside.comments 
             SET status = :status 
             WHERE comment_id = :id";
     
@@ -120,7 +119,7 @@
         $id = filter_input(INPUT_POST, 'comment_id', FILTER_SANITIZE_NUMBER_INT);
         $reviewComment = filter_input(INPUT_POST, 'review_reason', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         
-        $query = "UPDATE comments 
+        $query = "UPDATE serverside.comments 
             SET status = :status, review_reason = :review 
             WHERE comment_id = :id";
     
@@ -144,7 +143,7 @@
         $id = filter_input(INPUT_POST, 'comment_id', FILTER_SANITIZE_NUMBER_INT);
         $content = filter_var($disvowelContent, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         
-        $query = "UPDATE comments 
+        $query = "UPDATE serverside.comments 
             SET disvowel_comment = :content, status = :status 
             WHERE comment_id = :id";
     

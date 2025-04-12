@@ -1,5 +1,9 @@
 <?php
     session_start();
+
+    require('utils/functions.php');
+
+    unsetRedirectSessions();
     // Require authentication script to protect data manipulation from unauthorized users
     // Require database data
     require('connect.php');

@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+require('utils/functions.php');
+
+    unsetRedirectSessions();
+
 if(isset($_SESSION['user'])){
     $logged = true;
     $user = $_SESSION['user'];
@@ -49,9 +53,9 @@ if(isset($_GET['id'])){
        $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, 
                    c.category_name, c.category_slug, 
                    u.name, u.lastname
-                   FROM items i 
-                   JOIN categories c ON c.category_id = i.category_id
-                   JOIN users u ON i.user_id = u.user_id 
+                   FROM serverside.items i 
+                   JOIN serverside.categories c ON c.category_id = i.category_id
+                   JOIN serverside.users u ON i.user_id = u.user_id 
                    WHERE i.item_id = :id
                    AND i.slug = :slug";
        // A PDO::Statement is prepared from the query. 
@@ -63,10 +67,15 @@ if(isset($_GET['id'])){
        $statement->execute();
        // Get the data from the DB after the query was executed.
        $item = $statement->fetch();
+
+       $_SESSION['loginRquestItem'] = true;
+       $_SESSION['item_id'] = $item['item_id'];
+       $_SESSION['slug'] = $item['slug'];
+
        $commentQuery = "SELECT u.name, u.lastname, 
                        c.comment_content, c.disvowel_comment, c.comment_date_created, c.status 
-                       FROM comments c 
-                       JOIN users u ON c.user_id = u.user_id 
+                       FROM serverside.comments c 
+                       JOIN serverside.users u ON c.user_id = u.user_id 
                        WHERE c.item_id = :item_id
                        ORDER BY c.comment_date_created DESC";
 
@@ -231,6 +240,7 @@ if(isset($_GET['id'])){
                             <h5 class="mb-3">Leave a Comment</h5>
                             <form action="comments/add" method="post">
                                 <input type="hidden" name="item_id" value="<?= $item['item_id'] ?>">
+                                <input type="hidden" name="slug" value="<?= $item['slug'] ?>">
                                 <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
                                 <div class="mb-3">
                                     <textarea class="form-control" name="comment_text" rows="3"

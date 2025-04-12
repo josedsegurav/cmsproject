@@ -13,6 +13,18 @@ session_start();
     unset($_SESSION['signUpMessage']);
 }
 
+$logOutSuccess = false;
+if(isset($_SESSION['loggedOutMessage'])){
+    $loggedOut = $_SESSION['loggedOutMessage'];
+    $logOutSuccess = true;
+    unset($_SESSION['loggedOutMessage']);
+}
+
+if(isset($_SESSION['loginRquestItem'])){
+    $item_id = $_SESSION['item_id'];
+    $slug = $_SESSION['slug'];
+}
+
     if(isset($_SESSION['user'])){
         header("Location: dashboard");
     }
@@ -38,7 +50,7 @@ session_start();
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        $login_query = "SELECT * FROM users WHERE username = :username";
+        $login_query = "SELECT * FROM serverside.users WHERE username = :username";
         // A PDO::Statement is prepared from the query.
         $loginStatement = $db->prepare($login_query);
         $loginStatement->bindValue(':username', $username, PDO::PARAM_STR);
@@ -60,18 +72,11 @@ session_start();
                 ];
                 $_SESSION['loggedMessage'] = "You have successfully logged in!";
                 
-                if (isset($_SESSION['previous_page']) && isset($_SESSION['current_page'])) {
-                    if($_SESSION['current_page'] === "item.php"){
-                        echo('here');
-                    header("Location: " . $_SESSION['previous_page']);
-                }elseif($_SESSION['current_page'] !== "item.php") {
-                    echo('dash');
-                    header("Location: dashboard");
-                }
-                echo('wth');
-                header("Location: dashboard");
+                if (isset($_SESSION['loginRquestItem'])){
+                    unset($_SESSION['loginRquestItem']);
+                    header("Location: items/$item_id/$slug");
                 }else{
-                    echo('wtf');
+                    
                     header("Location: dashboard");
                 }
                 
@@ -151,8 +156,30 @@ session_start();
             </div>
         </div>
     </div>
+    <?php endif ?>
+    <?php if($logOutSuccess): ?>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="successToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-white text-dark border-bottom border-warning">
+                <strong class="me-auto">
+                    <i class="fas fa-check-circle me-2 text-warning"></i>
+                    <span>Interior<span class="text-warning">Items</span></span>
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body bg-white">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-user-check text-primary me-2"></i>
+                    
+                    <?= $loggedOut ?>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif ?>
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php if($signUpSuccess || $logOutSuccess): ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var successToast = new bootstrap.Toast(document.getElementById('successToast'), {
@@ -162,6 +189,8 @@ session_start();
     });
     </script>
     <?php endif ?>
+    
+    <?php include('footer.php'); ?>
 </body>
 
 </html>

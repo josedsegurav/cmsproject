@@ -1,6 +1,11 @@
 <?php
     session_start();
 
+    require('utils/functions.php');
+
+    unsetRedirectSessions();
+    $_SESSION['editUser'] = true;
+
     if(empty($_SESSION['user']) || ($_SESSION['user']['role'] !== "admin")){
         header("Location: login");
     }
@@ -12,7 +17,7 @@
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
     $query =   "SELECT user_id, role, name, lastname, email, username, password, created_at 
-            FROM users 
+            FROM serverside.users 
             WHERE user_id = :id";
     
     // A PDO::Statement is prepared from the query. 
@@ -101,7 +106,7 @@
                     if($password === $confirmPassword){
                         $hashPassword = password_hash($inputs['password'], PASSWORD_DEFAULT);
                     
-                        $signup_query = "UPDATE users 
+                        $signup_query = "UPDATE serverside.users 
                                         SET role = :role , name = :fname, lastname = :lname, email = :email, username = :username, password = :password 
                                         WHERE user_id = :user_id";
                         // A PDO::Statement is prepared from the query.
@@ -125,7 +130,7 @@
             }
         }else{
                  
-                $signup_query = "UPDATE users 
+                $signup_query = "UPDATE serverside.users 
                 SET role = :role , name = :fname, lastname = :lname, email = :email, username = :username 
                 WHERE user_id = :user_id";
                 // A PDO::Statement is prepared from the query.
@@ -149,7 +154,7 @@
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
         
         // SQL query
-        $query = "DELETE FROM users WHERE user_id = :id";
+        $query = "DELETE FROM serverside.users WHERE user_id = :id";
         
         // A PDO::Statement is prepared from the query.
         $statement = $db->prepare($query);

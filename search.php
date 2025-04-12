@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+require('utils/functions.php');
+
+    unsetRedirectSessions();
+
 require('connect.php');
 
 $title = "Results";
@@ -17,7 +21,7 @@ function filterInput() {
     }
 }
 
-$resultsPerPage = 4;
+$resultsPerPage = 2;
 $currentPage = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 $startQueryAt = $resultsPerPage * ($currentPage - 1);
 
@@ -32,9 +36,9 @@ if(isset($_GET['query'])) {
         $categoryQuery = filter_input(INPUT_GET, 'category', FILTER_SANITIZE_NUMBER_INT);
         
         // Count query for category-specific search
-        $countResultsQuery = "SELECT COUNT(*) FROM items i 
-                             JOIN categories c ON c.category_id = i.category_id
-                             JOIN users u ON i.user_id = u.user_id 
+        $countResultsQuery = "SELECT COUNT(*) FROM serverside.items i 
+                             JOIN serverside.categories c ON c.category_id = i.category_id
+                             JOIN serverside.users u ON i.user_id = u.user_id 
                              WHERE i.category_id = :category
                              AND i.item_name LIKE :search";
         
@@ -47,12 +51,13 @@ if(isset($_GET['query'])) {
         // Query for items with category filter
         $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, 
                  i.image, i.date_created, i.slug, c.category_name, c.category_slug, u.name, u.lastname  
-                 FROM items i 
-                 JOIN categories c ON c.category_id = i.category_id
-                 JOIN users u ON i.user_id = u.user_id 
+                 FROM serverside.items i 
+                 JOIN serverside.categories c ON c.category_id = i.category_id
+                 JOIN serverside.users u ON i.user_id = u.user_id 
                  WHERE i.category_id = :category
                  AND i.item_name LIKE :search
-                 LIMIT $startQueryAt, $resultsPerPage";
+                 ORDER BY i.item_id 
+                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -61,9 +66,9 @@ if(isset($_GET['query'])) {
         $searchResults = $statement->fetchAll();
     } else {
         // Count query for general search
-        $countResultsQuery = "SELECT COUNT(*) FROM items i 
-                             JOIN categories c ON c.category_id = i.category_id 
-                             JOIN users u ON i.user_id = u.user_id 
+        $countResultsQuery = "SELECT COUNT(*) FROM serverside.items i 
+                             JOIN serverside.categories c ON c.category_id = i.category_id 
+                             JOIN serverside.users u ON i.user_id = u.user_id 
                              WHERE i.item_name LIKE :search";
         
         $countResultsStatement = $db->prepare($countResultsQuery);
@@ -74,11 +79,12 @@ if(isset($_GET['query'])) {
         // Query for all items matching search
         $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, 
                  i.image, i.date_created, i.slug, c.category_name, c.category_slug, u.name, u.lastname  
-                 FROM items i 
-                 JOIN categories c ON c.category_id = i.category_id
-                 JOIN users u ON i.user_id = u.user_id  
+                 FROM serverside.items i 
+                 JOIN serverside.categories c ON c.category_id = i.category_id
+                 JOIN serverside.users u ON i.user_id = u.user_id  
                  WHERE i.item_name LIKE :search
-                 LIMIT $startQueryAt, $resultsPerPage";
+                 ORDER BY i.item_id 
+                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -100,9 +106,9 @@ if(filterInput()) {
 
         
         // Count query for general search
-        $countResultsQuery = "SELECT COUNT(*) FROM items i 
-                             JOIN categories c ON c.category_id = i.category_id 
-                             JOIN users u ON i.user_id = u.user_id 
+        $countResultsQuery = "SELECT COUNT(*) FROM serverside.items i 
+                             JOIN serverside.categories c ON c.category_id = i.category_id 
+                             JOIN serverside.users u ON i.user_id = u.user_id 
                              WHERE i.item_name LIKE :search";
         
         $countResultsStatement = $db->prepare($countResultsQuery);
@@ -113,11 +119,12 @@ if(filterInput()) {
         // Query for all items matching search
         $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, 
                  i.image, i.date_created, i.slug, c.category_name, c.category_slug, u.name, u.lastname  
-                 FROM items i 
-                 JOIN categories c ON c.category_id = i.category_id 
-                 JOIN users u ON i.user_id = u.user_id 
+                 FROM serverside.items i 
+                 JOIN serverside.categories c ON c.category_id = i.category_id 
+                 JOIN serverside.users u ON i.user_id = u.user_id 
                  WHERE i.item_name LIKE :search
-                 LIMIT $startQueryAt, $resultsPerPage";
+                 ORDER BY i.item_id 
+                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -126,12 +133,11 @@ if(filterInput()) {
     } else {
         // Sanitizing category data
         $categoryQuery = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
-        echo($categoryQuery);
         
         // Count query for category-specific search
-        $countResultsQuery = "SELECT COUNT(*) FROM items i 
-                             JOIN categories c ON c.category_id = i.category_id 
-                             JOIN users u ON i.user_id = u.user_id 
+        $countResultsQuery = "SELECT COUNT(*) FROM serverside.items i 
+                             JOIN serverside.categories c ON c.category_id = i.category_id 
+                             JOIN serverside.users u ON i.user_id = u.user_id 
                              WHERE i.category_id = :category
                              AND i.item_name LIKE :search";
         
@@ -144,12 +150,13 @@ if(filterInput()) {
         // Query for items with category filter
         $query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, 
                  i.image, i.date_created, i.slug, c.category_name, c.category_slug, u.name, u.lastname  
-                 FROM items i 
-                 JOIN categories c ON c.category_id = i.category_id 
-                 JOIN users u ON i.user_id = u.user_id 
+                 FROM serverside.items i 
+                 JOIN serverside.categories c ON c.category_id = i.category_id 
+                 JOIN serverside.users u ON i.user_id = u.user_id 
                  WHERE i.category_id = :category
                  AND i.item_name LIKE :search
-                 LIMIT $startQueryAt, $resultsPerPage";
+                 ORDER BY i.item_id 
+                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -205,7 +212,7 @@ if(filterInput()) {
                     <?php if($currentPage > 1): ?>
                     <li class="page-item">
                         <a class="page-link"
-                            href="?page=<?= $currentPage - 1 ?>&query=<?= $search ?><?= !empty($categoryQuery) ? "&category={$categoryQuery}" : "" ?>"
+                            href="search?page=<?= $currentPage - 1 ?>&query=<?= $search ?><?= !empty($categoryQuery) ? "&category={$categoryQuery}" : "" ?>"
                             aria-label="Previous" style="color: #2c3e50;">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
@@ -221,7 +228,7 @@ if(filterInput()) {
                     <?php for($i = 1; $i <= $pages; $i++): ?>
                     <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
                         <a class="page-link"
-                            href="?page=<?= $i ?>&query=<?= $search ?><?= !empty($categoryQuery) ? "&category={$categoryQuery}" : "" ?>"
+                            href="search?page=<?= $i ?>&query=<?= $search ?><?= !empty($categoryQuery) ? "&category={$categoryQuery}" : "" ?>"
                             style="<?= $i == $currentPage ? 'background-color: #2c3e50; border-color: #2c3e50;' : 'color: #2c3e50;' ?>"><?= $i ?></a>
                     </li>
                     <?php endfor ?>
@@ -229,7 +236,7 @@ if(filterInput()) {
                     <?php if($currentPage < $pages): ?>
                     <li class="page-item">
                         <a class="page-link"
-                            href="?page=<?= $currentPage + 1 ?>&query=<?= $search ?><?= !empty($categoryQuery) ? "&category={$categoryQuery}" : "" ?>"
+                            href="search?page=<?= $currentPage + 1 ?>&query=<?= $search ?><?= !empty($categoryQuery) ? "&category={$categoryQuery}" : "" ?>"
                             aria-label="Next" style="color: #2c3e50;">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
