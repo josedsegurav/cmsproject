@@ -117,7 +117,7 @@ $itemsSliced = array_slice($items, 0, 3);
             </div>
             <div class="row">
                 <?php foreach($itemsSliced as $item): ?>
-                    <?php include('listItemTemplate.php') ?>
+                <?php include('listItemTemplate.php') ?>
                 <?php endforeach ?>
             </div>
         </div>
