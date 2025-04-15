@@ -78,7 +78,7 @@ $categories = $statement->fetchAll();
                                     <label for="link" class="form-label">Link to buy it</label>
                                     <input id="link" type="text" name="link" class="form-control">
                                 </div>
-
+                                <?php if($user['role'] === "admin"): ?>
                                 <div class="mb-4">
                                     <div class="border-light bg-light">
 
@@ -87,7 +87,7 @@ $categories = $statement->fetchAll();
                                             leave the box unchecked and
                                             the link will default to the item's name.
                                         </p>
-
+                                        
                                         <div class="input-group">
                                             <div class="input-group-text">
                                                 <input name="slugCheck" id="slugCheck" type="checkbox"
@@ -96,10 +96,10 @@ $categories = $statement->fetchAll();
                                             </div>
                                             <input name="slug" id="slug" type="text" class="form-control">
                                         </div>
-
+                                        
                                     </div>
                                 </div>
-
+                                <?php endif ?>
                                 <div class="d-grid">
                                     <button type="submit" id="submit" name="create" class="btn btn-primary">
                                         <i class="fas fa-plus-circle me-2"></i>Create Item

@@ -20,10 +20,13 @@ if(filterInput()){
     if(isset($_POST['createCategory'])){
 
         // Replacing spaces for dashes from name input to use it as a slug.
-        $filterSlug = str_replace(" ", "-", $_POST['newCategory']);
+        $categorySlug = str_replace(" ", "-", $_POST['newCategory']);
+        $cleanSlug = preg_replace('/[^A-Za-z0-9\-]/', '', $categorySlug);
+        $singlehyphenSlug = preg_replace('/-+/', '-', $cleanSlug);
+        $slug = preg_replace('/-$/', '', $singlehyphenSlug);
 
         $newCategory = filter_input(INPUT_POST, 'newCategory', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $slug = filter_var($filterSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        
 
         $query = "INSERT INTO serverside.categories (category_name, category_slug) 
         VALUES (:newCategory, :slug)";
@@ -44,10 +47,14 @@ if(filterInput()){
     }elseif(isset($_POST['updateCategory'])) {
 
         // Replacing spaces for dashes from name input to use it as a slug.
-        $filterSlug = str_replace(" ", "-", $_POST['updateCategoryName']);
+        $categorySlug = str_replace(" ", "-", $_POST['updateCategoryName']);
+        $cleanSlug = preg_replace('/[^A-Za-z0-9\-]/', '', $categorySlug);
+        $singlehyphenSlug = preg_replace('/-+/', '-', $cleanSlug);
+        $slug = preg_replace('/-$/', '', $singlehyphenSlug);
+
         $id = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
         $updateCategory = filter_input(INPUT_POST, 'updateCategoryName', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $slug = filter_var($filterSlug, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        
 
         $query = "UPDATE serverside.categories 
                 SET category_name = :updateCategory, category_slug = :slug 

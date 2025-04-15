@@ -29,16 +29,6 @@ if(!empty($_SESSION['message'])){
     unset($_SESSION['message']);
 }
 
-$currentPage = $_SERVER['PHP_SELF'];
-$previous_page = $_SERVER['PHP_SELF'];
-if (isset($_SERVER['QUERY_STRING'])) {
-    $previous_page .= '?' . $_SERVER['QUERY_STRING'];
-}
-
-$_SESSION['current_page'] = $currentPage;
-$_SESSION['previous_page'] = $previous_page;
-
-
 require('connect.php');
 
 $title = "Item - ";
@@ -50,7 +40,7 @@ if(isset($_GET['id'])){
        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
        $slug = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING);
        // SQL query
-       $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, 
+        $query =   "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, 
                    c.category_name, c.category_slug, 
                    u.name, u.lastname
                    FROM serverside.items i 
@@ -68,10 +58,6 @@ if(isset($_GET['id'])){
        // Get the data from the DB after the query was executed.
        $item = $statement->fetch();
 
-       $_SESSION['loginRquestItem'] = true;
-       $_SESSION['item_id'] = $item['item_id'];
-       $_SESSION['slug'] = $item['slug'];
-
        $commentQuery = "SELECT u.name, u.lastname, 
                        c.comment_content, c.disvowel_comment, c.comment_date_created, c.status 
                        FROM serverside.comments c 
@@ -83,16 +69,39 @@ if(isset($_GET['id'])){
        $commentStatement = $db->prepare($commentQuery);
        // Bind the value of the id coming from the GET and sanitized into the query.
        $commentStatement->bindValue(':item_id', $item['item_id'], PDO::PARAM_INT);
-       // Execution on the DB server.
-       $commentStatement->execute();
-       // Get the data from the DB after the query was executed.
-       $comments = $commentStatement->fetchAll();
+
        if (!$item) {
            header("HTTP/1.0 404 Not Found");
            echo "Page not found or URL has been modified";
            exit;
        }else{
            $title .= " {$item['item_name']}";
+           $_SESSION['loginRquestItem'] = true;
+           $_SESSION['item_id'] = $item['item_id'];
+           $_SESSION['slug'] = $item['slug'];
+
+       
+       // Execution on the DB server.
+       $commentStatement->execute();
+       // Get the data from the DB after the query was executed.
+       $comments = $commentStatement->fetchAll();
+        
+       $relatedItemsQuery = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.category_id, i.store_url, i.image, i.date_created, i.slug, 
+       c.category_name, c.category_slug
+       FROM serverside.items i 
+       JOIN serverside.categories c ON c.category_id = i.category_id
+       WHERE NOT i.item_id = :id
+       AND i.category_id = :category";
+       // A PDO::Statement is prepared from the query. 
+       $relatedItemsStatement = $db->prepare($relatedItemsQuery);
+       // Bind the value of the id coming from the GET and sanitized into the query.
+       $relatedItemsStatement->bindValue(':id', $item['item_id'], PDO::PARAM_INT);
+       $relatedItemsStatement->bindValue(':category', $item['category_id'], PDO::PARAM_STR);
+       // Execution on the DB server.
+       $relatedItemsStatement->execute();
+       // Get the data from the DB after the query was executed.
+       $relatedItems = $relatedItemsStatement->fetchAll();
+
        }
 }}
 
@@ -289,11 +298,10 @@ if(isset($_GET['id'])){
                         <div class="card-body">
                             <span class="category-pill"><?= $relatedItem['category_name'] ?></span>
                             <h5 class="card-title"><?= $relatedItem['item_name'] ?></h5>
-                            <p class="card-text text-truncate"><?= strip_tags($relatedItem['content']) ?></p>
+                            <p class="card-text text-truncate"><?= $relatedItem['content'] ?></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="items/view/<?= $relatedItem['item_id'] ?>"
+                                <a href="items/<?= $relatedItem['item_id'] ?>/<?= $relatedItem['slug'] ?>"
                                     class="btn btn-sm btn-outline-primary">View Details</a>
-                                <small class="text-muted"><?= $relatedItem['comment_count'] ?> comments</small>
                             </div>
                         </div>
                     </div>

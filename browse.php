@@ -10,11 +10,16 @@ require('connect.php');
 $title = "Browse Items";
 
 // SQL query
-$query = "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, c.category_name, u.name, u.lastname
-        FROM serverside.items i 
-        JOIN serverside.categories c ON c.category_id = i.category_id
-        JOIN serverside.users u ON i.user_id = u.user_id
-        ORDER BY i.date_created DESC";
+$query =    "SELECT i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, 
+            c.category_name, u.name, u.lastname, COUNT(m.comment_id) AS comments_count 
+            FROM serverside.items i 
+            JOIN serverside.categories c ON c.category_id = i.category_id
+            JOIN serverside.users u ON i.user_id = u.user_id
+            LEFT JOIN serverside.comments m ON i.item_id = m.item_id
+            GROUP BY i.item_id, i.item_name, i.user_id, i.content, i.store_url, i.image, i.date_created, i.slug, 
+            c.category_name, u.name, u.lastname
+            ORDER BY i.date_created DESC";
+
 // A PDO::Statement is prepared from the query. 
 $statement = $db->prepare($query);
 // Execution on the DB server.
@@ -93,31 +98,7 @@ if(isset($_GET['p'])){
                     <?php elseif(isset($_GET['p']) && $browseCategories): ?>
                     <div class="row g-4">
                         <?php foreach ($browseCategories as $item): ?>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <?php if(!empty($item['image'])): ?>
-                                <div class="image">
-                                    <a href="/webdev2/project/images/<?= $item['image'] ?>">
-                                        <img src="/webdev2/project/images/<?= $item['image'] ?>" class="card-img-top" alt="<?= $item['item_name'] ?>">
-                                    </a>
-                                </div>
-                                <?php else: ?>
-                                <div class="card-img-top bg-light text-center py-5">
-                                    <i class="fas fa-image text-muted fs-1"></i>
-                                </div>
-                                <?php endif ?>
-                                
-                                <div class="card-body">
-                                    <span class="category-pill"><?= $item['category_name'] ?></span>
-                                    <h5 class="card-title"><?= $item['item_name'] ?></h5>
-                                    <p class="card-text"><?= substr($item['content'], 0, 100) ?>...</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <a href="/webdev2/project/items/<?= $item['slug'] ?>" class="btn btn-sm btn-outline-primary">View Details</a>
-                                        <small class="text-muted"><?= $item['comments_count'] ?? 0 ?> comments</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            <?php include('listItemTemplate.php') ?>
                         <?php endforeach ?>
                     </div>
                     
@@ -128,7 +109,7 @@ if(isset($_GET['p'])){
                     </div>
                     <?php endif ?>
 
-                    <!-- Pagination -->
+                    <!-- Pagination
                     <nav class="mt-5">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
@@ -141,7 +122,7 @@ if(isset($_GET['p'])){
                                 <a class="page-link" href="#">Next</a>
                             </li>
                         </ul>
-                    </nav>
+                    </nav> -->
                 
             </div>
         </div>

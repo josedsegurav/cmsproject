@@ -57,7 +57,7 @@ if(isset($_GET['query'])) {
                  WHERE i.category_id = :category
                  AND i.item_name LIKE :search
                  ORDER BY i.item_id 
-                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
+                 LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -84,7 +84,7 @@ if(isset($_GET['query'])) {
                  JOIN serverside.users u ON i.user_id = u.user_id  
                  WHERE i.item_name LIKE :search
                  ORDER BY i.item_id 
-                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
+                 LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -124,7 +124,7 @@ if(filterInput()) {
                  JOIN serverside.users u ON i.user_id = u.user_id 
                  WHERE i.item_name LIKE :search
                  ORDER BY i.item_id 
-                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
+                 LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -133,6 +133,7 @@ if(filterInput()) {
     } else {
         // Sanitizing category data
         $categoryQuery = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
+
         
         // Count query for category-specific search
         $countResultsQuery = "SELECT COUNT(*) FROM serverside.items i 
@@ -156,7 +157,7 @@ if(filterInput()) {
                  WHERE i.category_id = :category
                  AND i.item_name LIKE :search
                  ORDER BY i.item_id 
-                 OFFSET $startQueryAt ROWS FETCH NEXT $resultsPerPage ROWS ONLY";
+                 LIMIT $startQueryAt, $resultsPerPage";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':search', "%$search%", PDO::PARAM_STR);

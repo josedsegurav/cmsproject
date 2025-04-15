@@ -91,8 +91,8 @@ if(isset($_GET['id'])){
 
                                 <div class="mb-3">
                                     <?php if(!empty($item['image'])): ?>
-                                    <img src="images/medium_<?= $item['image'] ?>"
-                                        alt="<?= $item['image'] ?>" class="img-thumbnail mb-2">
+                                    <img src="images/medium_<?= $item['image'] ?>" alt="<?= $item['image'] ?>"
+                                        class="img-thumbnail mb-2">
                                     <?php else: ?>
                                     <?php endif ?>
                                     <label for="file" class="form-label">Image File</label>
@@ -125,7 +125,7 @@ if(isset($_GET['id'])){
                                     <input id="link" type="text" name="link" value="<?= $item['store_url'] ?>"
                                         class="form-control" required>
                                 </div>
-
+                                <?php if($user['role'] === "admin"): ?>
                                 <div class="mb-4">
                                     <div class="border-light bg-light p-3">
                                         <p class="small text-muted mb-3">
@@ -142,15 +142,16 @@ if(isset($_GET['id'])){
                                             <input name="slug" id="slug" type="text" class="form-control"
                                                 value="<?= $item['slug'] ?>">
                                         </div>
+
                                     </div>
                                 </div>
-
+                                <?php endif ?>
                                 <div class="d-grid gap-2">
                                     <button type="submit" id="submit" name="update" class="btn btn-primary">
                                         <i class="fas fa-save me-2"></i>Update Item
                                     </button>
-                                    <button type="button" id="delete" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                                        class="btn btn-danger">
+                                    <button type="button" id="delete" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal" class="btn btn-danger">
                                         <i class="fas fa-trash-alt me-2"></i>Delete Item
                                     </button>
                                 </div>
@@ -183,7 +184,7 @@ if(isset($_GET['id'])){
             </div>
         </div>
     </div>
-    
+
 
     <!-- Footer -->
     <?php include('footer.php'); ?>

@@ -46,6 +46,7 @@
         $lname = filter_input(INPUT_POST, 'lname', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
@@ -73,14 +74,15 @@
             if($password === $confirmPassword){
                 $hashPassword = password_hash($password, PASSWORD_DEFAULT);
     
-                $signup_query = "INSERT INTO serverside.users (name, lastname, email, username, password) 
-                        VALUES (:fname, :lname, :email, :username, :password)";
+                $signup_query = "INSERT INTO serverside.users (name, lastname, email, username, role, password) 
+                        VALUES (:fname, :lname, :email, :username, :role, :password)";
                 // A PDO::Statement is prepared from the query.
                 $signupStatement = $db->prepare($signup_query);
                 $signupStatement->bindValue(':fname', $fname, PDO::PARAM_STR);
                 $signupStatement->bindValue(':lname', $lname, PDO::PARAM_STR);
                 $signupStatement->bindValue(':email', $email, PDO::PARAM_STR);
                 $signupStatement->bindValue(':username', $username, PDO::PARAM_STR);
+                $signupStatement->bindValue(':role', $role, PDO::PARAM_STR);
                 $signupStatement->bindValue(':password', $hashPassword, PDO::PARAM_STR);
                 
                 // Execution on the DB server.
@@ -159,8 +161,8 @@
                             </div>
 
                             <div class="mb-3">
-                                    <label for="category" class="form-label">Role</label>
-                                        <select class="form-select" id="role" name="category" required>
+                                    <label for="role" class="form-label">Role</label>
+                                        <select class="form-select" id="role" name="role" required>
                                             <option value="" disabled selected>- Choose a Role-</option>
                                             <option value="admin">admin</option>
                                             <option value="user">user</option>

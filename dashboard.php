@@ -127,6 +127,8 @@ if($user['role'] === "admin"){
             $tab = filter_input(INPUT_GET, 'manage', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     
             $tabData = getGeneralData($tab, $db);
+
+            $_SESSION['dashboardTab'] = true;
     
         }
 }elseif($user['role'] === "user"){
@@ -908,12 +910,12 @@ if($user['role'] === "admin"){
                     <div class="bg-white">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Current Categories</h5>
-                            <div class="input-group w-50">
+                            <!-- <div class="input-group w-50">
                                 <input type="text" class="form-control" placeholder="Search categories...">
                                 <button class="btn btn-outline-secondary" type="button">
                                     <i class="fas fa-search"></i>
                                 </button>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="table-responsive">
