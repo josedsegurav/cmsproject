@@ -20,7 +20,8 @@
             !empty($_POST['username']) &&
             !empty($_POST['fname']) && 
             !empty($_POST['lname']) && 
-            !empty($_POST['email']) &&
+            !empty($_POST['email']) && 
+            filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL) && 
             isset($_POST['role']) &&
             !empty($_POST['password']) &&
             !empty($_POST['confirmPassword']) &&
@@ -141,23 +142,23 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fname" class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="fname" name="fname"  required>
+                                    <input type="text" class="form-control" id="fname" name="fname" value="<?= isset($_POST['fname']) ? $_POST['fname'] : '' ?>" required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="lname" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="lname" name="lname" required>
+                                    <input type="text" class="form-control" id="lname" name="lname" value="<?= isset($_POST['lname']) ? $_POST['lname'] : '' ?>" required>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" value="<?= isset($_POST['email']) ? $_POST['email'] : '' ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" required>
+                                <input type="text" class="form-control" id="username" name="username" value="<?= isset($_POST['username']) ? $_POST['username'] : '' ?>" required>
                             </div>
 
                             <div class="mb-3">

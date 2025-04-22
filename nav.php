@@ -95,7 +95,7 @@ if(isset($_POST['logOut'])){
                     <form action="search" method="post" class="d-flex m-0">
                         <input id="searchInput" name="searchInput" type="text" class="form-control search-bar me-2"
                             placeholder="Search for items..." style="max-width: 500px;">
-                        <select class="form-select search-bar me-2" id="category" name="category">
+                        <select class="form-select search-bar me-2" id="categoryNav" name="category">
                             <option value="default" selected>All Categories</option>
                             <?php foreach ($navCategories as $category): ?>
                             <option value="<?= $category['category_id']?>"><?= $category['category_name']?></option>

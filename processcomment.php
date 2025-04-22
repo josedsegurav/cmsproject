@@ -107,10 +107,10 @@
 
         }else{
 
-            header("Location: dashboard/comments");
+            header("Location: ../dashboard/comments");
             exit();
         }
-            header("Location: dashboard/comments");
+            header("Location: ../dashboard/comments");
 
     }
 
@@ -132,7 +132,7 @@
             // Execution on the DB server.
             $statement->execute();
            
-            header("Location: dashboard/comments");
+            header("Location: ../dashboard/comments");
 
     }
 
@@ -156,7 +156,7 @@
             // Execution on the DB server.
             $statement->execute();
            
-            header("Location: dashboard/comments");
+            header("Location: ../dashboard/comments");
 
     }
 ?>

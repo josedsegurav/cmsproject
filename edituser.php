@@ -56,7 +56,8 @@
                 !empty($_POST['username']) &&
                 !empty($_POST['fname']) && 
                 !empty($_POST['lname']) && 
-                !empty($_POST['email']) &&
+                !empty($_POST['email']) && 
+                filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL) && 
                 isset($_POST['role']) &&
                 !empty($_POST['password']) &&
                 !empty($_POST['confirmPassword']) &&
@@ -81,7 +82,8 @@
                 !empty($_POST['username']) &&
                 !empty($_POST['fname']) && 
                 !empty($_POST['lname']) && 
-                !empty($_POST['email']) &&
+                !empty($_POST['email']) && 
+                filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL) && 
                 isset($_POST['role']) &&
                 !(trim($_POST['username']) == '') && 
                 !(trim($_POST['fname']) == '') &&
@@ -243,7 +245,7 @@
 
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" name="changePassword" id="changePassword">
-                            <label class="form-check-label" for="checkDefault">
+                            <label class="form-check-label" for="changePassword">
                                 Change Password
                             </label>
                         </div>

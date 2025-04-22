@@ -16,6 +16,7 @@ if(isset($_SESSION['user'])){
 }
 
 $loginSuccess = false;
+$loggedIn = '';
 
 if(isset($_SESSION['loggedMessage'])){
     $loggedIn = $_SESSION['loggedMessage'];

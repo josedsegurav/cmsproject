@@ -167,10 +167,14 @@ $itemsSliced = array_slice($items, 0, 3);
             </div>
         </div>
     </section>
-   
+
+    <div id="assistant-container"></div>
+
     <!-- Footer -->
     <?php include('footer.php'); ?>
-  
+
+    <script src="assistant.jsx"></script>
+
 </body>
 
 </html>

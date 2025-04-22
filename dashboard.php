@@ -15,6 +15,7 @@ $currentPage = $_SERVER['PHP_SELF'];
 $_SESSION['current_page'] = $currentPage;
 
 $loginSuccess = false;
+$loggedIn = '';
 
 if(isset($_SESSION['loggedMessage'])){
     $loggedIn = $_SESSION['loggedMessage'];
@@ -382,6 +383,7 @@ if($user['role'] === "admin"){
                 </thead>
                 <tbody>
                     <?php foreach ($tabData as $user): ?>
+                        <?php if($user['role'] === 'user'): ?>
                     <tr>
                         <th scope="row"><?= $user['user_id'] ?></th>
                         <td>
@@ -392,7 +394,7 @@ if($user['role'] === "admin"){
                         <td><?= $user['username'] ?></td>
                         <td><?= $user['email'] ?></td>
                         <td>
-                            <span class="badge bckg-<?= $user['role'] === 'admin' ? 'primary' : 'secondary' ?>">
+                            <span class="badge bckg-secondary">
                                 <?= ucfirst($user['role']) ?>
                             </span>
                         </td>
@@ -406,12 +408,13 @@ if($user['role'] === "admin"){
                             </div>
                         </td>
                     </tr>
+                    <?php endif ?>
                     <?php endforeach ?>
                 </tbody>
             </table>
         </div>
         <!-- Pagination -->
-        <?php if($totalUsers[0] > $resultsPerPage): ?>
+        <!-- <?php if($totalUsers[0] > $resultsPerPage): ?>
         <nav aria-label="Search results pages" class="mt-5">
             <ul class="pagination justify-content-center">
                 <?php if($currentPage > 1): ?>
@@ -454,7 +457,7 @@ if($user['role'] === "admin"){
         </nav>
         <?php else: ?>
 
-        <?php endif ?>
+        <?php endif ?> -->
 
         <?php endif ?>
         <!-- Items Tab -->
@@ -525,7 +528,7 @@ if($user['role'] === "admin"){
             </table>
         </div>
         <!-- Pagination -->
-        <?php if($totalItems[0] > $resultsPerPage): ?>
+        <!-- <?php if($totalItems[0] > $resultsPerPage): ?>
         <nav aria-label="Search results pages" class="mt-5">
             <ul class="pagination justify-content-center">
                 <?php if($currentPage > 1): ?>
@@ -568,7 +571,7 @@ if($user['role'] === "admin"){
         </nav>
         <?php else: ?>
 
-        <?php endif ?>
+        <?php endif ?> -->
 
         <?php endif ?>
         <!-- Comments Tab -->
@@ -810,7 +813,7 @@ if($user['role'] === "admin"){
                 </tbody>
             </table>
         </div>
-        <nav aria-label="Page navigation">
+        <!-- <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <li class="page-item disabled">
                     <a class="page-link" href="#" tabindex="-1">Previous</a>
@@ -822,7 +825,7 @@ if($user['role'] === "admin"){
                     <a class="page-link" href="#">Next</a>
                 </li>
             </ul>
-        </nav>
+        </nav> -->
 
         <?php endif ?>
         <!-- Categories Tab -->
@@ -857,7 +860,7 @@ if($user['role'] === "admin"){
                         <h5 class="card-title mb-3">Update Category</h5>
                         <div class="mb-3">
                             <label for="category" class="form-label">Select Category</label>
-                            <select class="form-select mb-3" id="category" name="category">
+                            <select class="form-select mb-3" id="categorytab" name="category">
                                 <option value="" disabled selected>- Choose a Category -</option>
                                 <?php foreach ($tabData as $row): ?>
                                 <option value="<?= $row['category_id'] ?>"><?= $row['category_name'] ?></option>
